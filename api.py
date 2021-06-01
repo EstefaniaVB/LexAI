@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from LexAI.twitterAPI import twitter_query
 
 #from predictions import get_prediction
 #from consultations import get_consultation
@@ -18,7 +19,7 @@ app.add_middleware(
 # Create root endpoint
 @app.get("/")
 def index():
-    return {"greeting": "Hello world"}
+    return {"greeting": "Hello Estefania"}
 
 # Predict endpoint
 @app.get("/predict")
@@ -29,8 +30,10 @@ def predict(keyword):
     #Consultations list
         #consultations=get_consultation(keyword)
     #Twitter list
-        #tweet_volume=get_tweet_volume(keyword)
-        #return regulations,consultations,tweet_volume
+    tweets=twitter_query(keyword,10)
+    tweet_likes=tweets['favorite_count'].sum()
+    tweet_followers=tweets['followers_count'].sum()
+    #return regulations,consultations,tweet_volume
 
     # print keyword entered by user
-    return {'keyword': keyword}
+    return str(tweet_likes),str(tweet_followers)

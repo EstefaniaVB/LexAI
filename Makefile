@@ -3,6 +3,7 @@
 # ----------------------------------
 install_requirements:
 	@pip install -r requirements.txt
+	@pip3 install meilisearch
 
 check_code:
 	@flake8 scripts/* LexAI/*.py
