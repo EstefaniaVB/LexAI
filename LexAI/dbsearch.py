@@ -88,7 +88,7 @@ class Search:
             return
         
         if r.get('status_code', None) == 500:
-            return 
+            return
         
         final_results = []
         
@@ -103,6 +103,7 @@ class Search:
             consultations['start_date'] = initiative["currentStatuses"][0]["feedbackStartDate"]
             consultations['end_date'] = initiative["currentStatuses"][0]["feedbackEndDate"]
             
+            # links sometimes don't work, plz fix :)
             link_url = "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/"
             title_link = consultations['title'].replace(" ","-")
             consultations['link']= f"{link_url}{consultations['id']}-{title_link}_en"
@@ -132,6 +133,7 @@ class Search:
 
         results = self.search_many(query, pages, index, **params)
         self.client.index(index).add_documents(results)
+        
         end_len = self.client.index(index).get_stats()['numberOfDocuments']
         
         return f"Found {len(results)} results. Added {end_len - start_len} entries to {index} index"
@@ -139,11 +141,11 @@ class Search:
     def build_ms_many(self, queries, pages, **params):
         for index in self.indices:
             start_len = self.client.index(index).get_stats()['numberOfDocuments']
-            
+
             for query in queries:
                 print(f"Searching {pages} pages for {query} in {index}. ")
                 print(self.build_ms(query, pages, index, **params))
-                
+
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
             print(f"\nAdded {end_len - start_len} total entries to {index} index\n")
 
