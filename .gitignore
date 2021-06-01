@@ -5,4 +5,8 @@
 raw_data/
 **/__pycache__/
 .env
+<<<<<<< HEAD
 .env
+=======
+meilisearch
+>>>>>>> 5d25a4122a333f9e138fd9e14da14404b0c1562d
