@@ -2,6 +2,7 @@ import json
 import re
 import unicodedata
 from os import path
+from time import sleep
 
 import meilisearch
 import requests
@@ -70,7 +71,7 @@ class Search:
 
         return final_results
     
-    def search_consultations(self, query, page=0, size=10, lang="EN"):
+    def search_consultations(self, query, page=0, size=50, lang="EN"):
         url = "https://ec.europa.eu/info/law/better-regulation/brpapi/searchInitiatives"
         
         params = {
@@ -133,25 +134,31 @@ class Search:
         return results
 
     def build_ms(self, query, pages=10, index='eurlex', **params):
-        start_len = self.client.index(index).get_stats()['numberOfDocuments']
+        db = self.client.index(index)
+        start_len = db.get_stats()['numberOfDocuments']
 
         results = self.search_many(query, pages, index, **params)
-        self.client.index(index).add_documents(results)
+        update_id = db.add_documents(results)['updateId']
         
-        end_len = self.client.index(index).get_stats()['numberOfDocuments']
+        while db.get_update_status(update_id)['status'] != 'processed':
+            sleep(0.1)
+        end_len = db.get_stats()['numberOfDocuments']
         
-        return f"Found {len(results)} results. Added {end_len - start_len} entries to {index} index"
+        return f"Found {len(results)} results. Added {end_len - start_len} new entries to {index} index"
 
     def build_ms_many(self, queries, pages, **params):
+        if not isinstance(queries, list):
+            queries = [queries]
+        
         for index in self.indices:
             start_len = self.client.index(index).get_stats()['numberOfDocuments']
 
             for query in queries:
                 print(f"Searching {pages} pages for {query} in {index}. ")
-                print(self.build_ms(query, pages, index, **params))
-
+                print(self.build_ms(query, pages, index, **params), '\n')
+            
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
-            print(f"\nAdded {end_len - start_len} total entries to {index} index\n")
+            print(f"Total: {end_len - start_len} new entries added to {index} index\n")
 
     def query_ms(self, query, index='eurlex', n=20):
         if index not in ['eurlex', 'consultations']:
