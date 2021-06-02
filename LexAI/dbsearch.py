@@ -105,6 +105,10 @@ class Search:
             consultations['title'] = initiative["shortTitle"]
             consultations['type_of_act'] = initiative["foreseenActType"]
             # consultations['topics'] = initiative["topics"][0]["label"]
+            try:
+                consultations['topics'] = initiative["topics"][0]["label"]
+            except:
+                consultations['topics'] = ""
             consultations['status'] = initiative["currentStatuses"][0]["receivingFeedbackStatus"]
             
             if start_date is not None:
