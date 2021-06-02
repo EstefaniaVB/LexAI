@@ -3,7 +3,7 @@ import re
 import unicodedata
 from datetime import datetime
 from os import path
-from time import sleep
+from time import sleep, mktime
 
 import meilisearch
 import requests
@@ -62,11 +62,13 @@ class Search:
             title = result.find('a', class_='title')
             col2 = result.find_all('div', class_='col-sm-6')[1].find_all('dd')
             date = list(filter(lambda v: re.match("\d{2}/\d{2}/\d{4}", v.text), col2))[0]
+            date = unicodedata.normalize('NFKD', date.text[:10])
             
             entry['id'] = unicodedata.normalize('NFKD', celex)
             entry['title'] = unicodedata.normalize('NFKD', title.text)
             entry['author'] = unicodedata.normalize('NFKD', col2[0].text)
-            entry['date'] = datetime.strptime(unicodedata.normalize('NFKD', date.text[:10]), "%d/%m/%Y").date()
+            entry['date'] = date
+            entry['timestamp'] = mktime(datetime.strptime(date, "%d/%m/%Y").timetuple())
             entry['link'] = unicodedata.normalize('NFKD', title['name'])
             final_results.append(entry)
         return final_results
@@ -96,16 +98,29 @@ class Search:
         for initiative in content["initiativeResultDtoes"]:
             consultations = {}
             
-            start_date = initiative["currentStatuses"][0]["feedbackStartDate"][:10]
-            end_date = initiative["currentStatuses"][0]["feedbackEndDate"][:10]
+            start_date = initiative["currentStatuses"][0]["feedbackStartDate"]
+            end_date = initiative["currentStatuses"][0]["feedbackEndDate"]
 
             consultations['id'] = initiative["id"]
             consultations['title'] = initiative["shortTitle"]
             consultations['type_of_act'] = initiative["foreseenActType"]
             # consultations['topics'] = initiative["topics"][0]["label"]
             consultations['status'] = initiative["currentStatuses"][0]["receivingFeedbackStatus"]
-            consultations['start_date'] = datetime.strptime(start_date, "%d/%m/%Y").date()
-            consultations['end_date'] = datetime.strptime(end_date, "%d/%m/%Y").date()
+            
+            if start_date is not None:
+                consultations['start_date'] = start_date[:10]
+                consultations['start_timestamp'] = mktime(datetime.strptime(start_date, "%Y/%m/%d %H:%M:%S").timetuple())
+            else:
+                consultations['start_date'] = 'Unknown'
+                consultations['start_timestamp'] = 0
+                
+            if end_date is not None:
+                consultations['end_date'] = end_date[:10]
+                consultations['end_timestamp'] = mktime(datetime.strptime(end_date, "%Y/%m/%d %H:%M:%S").timetuple())
+            else:
+                consultations['end_date'] = 'Unknown'
+                consultations['end_timestamp'] = 0
+
             
             # links sometimes don't work, plz fix :)
             link_url = "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/"
@@ -149,19 +164,28 @@ class Search:
         if not isinstance(queries, list):
             queries = [queries]
         
+        log = {}
         for index in self.indices:
             if rebuild:
                 self.client.index(index).delete_all_documents()
+                print(f'Deleted all documents from {index} index')
             
             start_len = self.client.index(index).get_stats()['numberOfDocuments']
 
+            query_log = {}
+            query_log['rebuild'] = rebuild
             for query in queries:
                 print(f"Searching {pages} pages for {query} in {index}. ")
-                print(self.build_ms(query, pages, index, **params), '\n')
+                result = self.build_ms(query, pages, index, **params)
+                query_log[query] = result
+                print(result, '\n')
+            log[index] = query_log
             
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
-            print(f"Total: {end_len - start_len} new entries added to {index} index\n")
-        return {"Complete": f"Total: {end_len - start_len} new entries added to {index} index\n"}
+            idx_result = f"Total: {end_len - start_len} new entries added to {index} index\n"
+            log[index]['complete'] = idx_result
+            print(idx_result)
+        return log
 
     def query_ms(self, query, index='eurlex', n=20):
         if index not in ['eurlex', 'consultations']:

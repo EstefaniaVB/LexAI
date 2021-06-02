@@ -66,6 +66,8 @@ def build(queries, pages=50, rebuild=0):
             'politics',
             'tax'
         ]
+    else:
+        queries = queries.split(',')
     
     rebuild = True if rebuild == '1' else False
     return search.build_ms_many(queries, int(pages), rebuild)
