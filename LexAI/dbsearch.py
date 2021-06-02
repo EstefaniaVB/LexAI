@@ -28,6 +28,21 @@ class Search:
             except:
                 pass
             
+        self.client.index(indices[0]).update_settings({
+            'displayedAttributes': ['title', 'author', 'date', 'link'],
+            'searchableAttributes': ['title', 'author', 'date'],
+            'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
+                             'wordsPosition', 'exactness', 'desc(timestamp)']})
+        
+        self.client.index(indices[1]).update_settings({
+            'displayedAttributes': ['title', 'topics', 'type_of_act', 
+                                     'start_date', 'end_date', 'link'],
+            'searchableAttributes': ['title', 'topics', 'type_of_act', 'start_date', 
+                                     'end_date'],
+            'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
+                             'wordsPosition', 'exactness', 'desc(start_timestamp)', 
+                             'desc(end_timestamp)']})
+            
         self.log = {}
 
     def search_eurlex(self, query, page=1, lang='en', year=None):
@@ -114,7 +129,7 @@ class Search:
             try:
                 consultations['topics'] = initiative["topics"][0]["label"]
             except:
-                consultations['topics'] = ""
+                consultations['topics'] = "Unknown"
             consultations['status'] = initiative["currentStatuses"][0]["receivingFeedbackStatus"]
             
             if start_date is not None:
@@ -204,3 +219,5 @@ class Search:
             return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
+
+print(Search().query_ms('2020'))
