@@ -5,4 +5,7 @@
 raw_data/
 **/__pycache__/
 .env
+.env
+data.ms
 meilisearch
+

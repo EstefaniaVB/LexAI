@@ -47,7 +47,11 @@ def query(query, index='eurlex', n=20):
     return {i: result for i, result in enumerate(results)}
 
 @app.get("/build")
+<<<<<<< HEAD
 def build(queries, pages=50, rebuild=0):
+=======
+def build(queries='default', pages=50, rebuild=0):
+>>>>>>> ba42331d3018688202c1bcb27fce82d3b6762bad
     if queries == 'default':
         queries = [
             'agriculture',
@@ -66,7 +70,15 @@ def build(queries, pages=50, rebuild=0):
             'politics',
             'tax'
         ]
+<<<<<<< HEAD
 
     rebuild = True if rebuild == '1' else False
     #return search.build_ms_many(queries, int(pages), rebuild)
     return search.build_ms_many(queries, int(pages))
+=======
+    else:
+        queries = queries.split(',')
+    
+    rebuild = True if rebuild == '1' else False
+    return search.build_ms_many(queries, int(pages), rebuild)
+>>>>>>> ba42331d3018688202c1bcb27fce82d3b6762bad

@@ -28,6 +28,8 @@ clean:
 
 install:
 	@pip install . -U
+	@pip3 install meilisearch
+	@curl -L https://install.meilisearch.com | sh
 
 all: clean install test black check_code
 
@@ -60,6 +62,7 @@ pypi:
 #      API
 # ----------------------------------
 run_api:
+<<<<<<< HEAD
 	uvicorn api:app --reload  # load web server with code autoreload
 
 
@@ -79,3 +82,7 @@ heroku_create_app:
 deploy_heroku:
 	-@git push heroku master
 	-@heroku ps:scale web=1
+=======
+	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
+
+>>>>>>> ba42331d3018688202c1bcb27fce82d3b6762bad
