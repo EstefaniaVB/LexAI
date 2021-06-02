@@ -4,6 +4,7 @@
 install_requirements:
 	@pip install -r requirements.txt
 	@pip3 install meilisearch
+	@pip install streamlit --use-feature=2020-resolver
 
 check_code:
 	@flake8 scripts/* LexAI/*.py

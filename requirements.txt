@@ -31,8 +31,3 @@ memoized-property
 termcolor
 python-dotenv
 
-# search/database
-meilisearch
-
-# website
-streamlit
