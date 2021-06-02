@@ -34,4 +34,4 @@ python-dotenv
 meilisearch
 
 # website
-Streamline
+streamlit
