@@ -27,6 +27,8 @@ class Search:
                 print(f'Created {index} index')
             except:
                 pass
+            
+        self.log = {}
 
     def search_eurlex(self, query, page=1, lang='en', year=None):
         url = "https://eur-lex.europa.eu/search.html"
@@ -98,9 +100,13 @@ class Search:
         for initiative in content["initiativeResultDtoes"]:
             consultations = {}
             
-            start_date = initiative["currentStatuses"][0]["feedbackStartDate"]
-            end_date = initiative["currentStatuses"][0]["feedbackEndDate"]
-
+            try:
+                start_date = initiative["currentStatuses"][0]["feedbackStartDate"]
+                end_date = initiative["currentStatuses"][0]["feedbackEndDate"]
+            except IndexError:
+                start_date = None
+                end_date = None
+                
             consultations['id'] = initiative["id"]
             consultations['title'] = initiative["shortTitle"]
             consultations['type_of_act'] = initiative["foreseenActType"]
@@ -187,7 +193,9 @@ class Search:
             
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
             idx_result = f"Total: {end_len - start_len} new entries added to {index} index\n"
+            
             log[index]['complete'] = idx_result
+            self.log = log
             print(idx_result)
         return log
 
