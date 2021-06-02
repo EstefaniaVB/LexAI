@@ -3,6 +3,7 @@
 # ----------------------------------
 install_requirements:
 	@pip install -r requirements.txt
+	@pip3 install meilisearch
 
 check_code:
 	@flake8 scripts/* LexAI/*.py
@@ -27,6 +28,8 @@ clean:
 
 install:
 	@pip install . -U
+	@pip3 install meilisearch
+	@curl -L https://install.meilisearch.com | sh
 
 all: clean install test black check_code
 
@@ -53,3 +56,11 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+
+# ----------------------------------
+#      API
+# ----------------------------------
+run_api:
+	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
+
