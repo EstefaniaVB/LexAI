@@ -28,3 +28,6 @@ joblib
 memoized-property
 termcolor
 python-dotenv
+
+# search/database
+meilisearch

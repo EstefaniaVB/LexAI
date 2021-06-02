@@ -47,7 +47,7 @@ def query(query, index='eurlex', n=20):
     return {i: result for i, result in enumerate(results)}
 
 @app.get("/build")
-def build(queries, pages=50, rebuild=0):
+def build(queries='default', pages=50, rebuild=0):
     if queries == 'default':
         queries = [
             'agriculture',
