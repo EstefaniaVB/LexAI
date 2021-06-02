@@ -31,3 +31,6 @@ memoized-property
 termcolor
 python-dotenv
 
+#
+streamlit
+meilisearch
