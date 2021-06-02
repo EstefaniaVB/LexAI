@@ -1,6 +1,7 @@
 import json
 import re
 import unicodedata
+from datetime import datetime
 from os import path
 from time import sleep
 
@@ -65,10 +66,9 @@ class Search:
             entry['id'] = unicodedata.normalize('NFKD', celex)
             entry['title'] = unicodedata.normalize('NFKD', title.text)
             entry['author'] = unicodedata.normalize('NFKD', col2[0].text)
-            entry['date'] = unicodedata.normalize('NFKD', date.text[:10])
+            entry['date'] = datetime.strptime(unicodedata.normalize('NFKD', date.text[:10]), "%d/%m/%Y").date()
             entry['link'] = unicodedata.normalize('NFKD', title['name'])
             final_results.append(entry)
-
         return final_results
     
     def search_consultations(self, query, page=0, size=50, lang="EN"):
@@ -95,14 +95,17 @@ class Search:
         
         for initiative in content["initiativeResultDtoes"]:
             consultations = {}
+            
+            start_date = initiative["currentStatuses"][0]["feedbackStartDate"][:10]
+            end_date = initiative["currentStatuses"][0]["feedbackEndDate"][:10]
 
             consultations['id'] = initiative["id"]
             consultations['title'] = initiative["shortTitle"]
             consultations['type_of_act'] = initiative["foreseenActType"]
             # consultations['topics'] = initiative["topics"][0]["label"]
             consultations['status'] = initiative["currentStatuses"][0]["receivingFeedbackStatus"]
-            consultations['start_date'] = initiative["currentStatuses"][0]["feedbackStartDate"]
-            consultations['end_date'] = initiative["currentStatuses"][0]["feedbackEndDate"]
+            consultations['start_date'] = datetime.strptime(start_date, "%d/%m/%Y").date()
+            consultations['end_date'] = datetime.strptime(end_date, "%d/%m/%Y").date()
             
             # links sometimes don't work, plz fix :)
             link_url = "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/"
@@ -142,11 +145,14 @@ class Search:
         
         return f"Found {len(results)} results. Added {end_len - start_len} new entries to {index} index"
 
-    def build_ms_many(self, queries, pages, **params):
+    def build_ms_many(self, queries, pages, rebuild, **params):
         if not isinstance(queries, list):
             queries = [queries]
         
         for index in self.indices:
+            if rebuild:
+                self.client.index(index).delete_all_documents()
+            
             start_len = self.client.index(index).get_stats()['numberOfDocuments']
 
             for query in queries:
@@ -155,9 +161,10 @@ class Search:
             
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
             print(f"Total: {end_len - start_len} new entries added to {index} index\n")
+        return {"Complete": f"Total: {end_len - start_len} new entries added to {index} index\n"}
 
     def query_ms(self, query, index='eurlex', n=20):
         if index not in ['eurlex', 'consultations']:
-            return "Error: index not recognised"
+            return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
