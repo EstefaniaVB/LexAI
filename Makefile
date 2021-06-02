@@ -28,6 +28,8 @@ clean:
 
 install:
 	@pip install . -U
+	@pip3 install meilisearch
+	@curl -L https://install.meilisearch.com | sh
 
 all: clean install test black check_code
 
@@ -60,4 +62,6 @@ pypi:
 #      API
 # ----------------------------------
 run_api:
+	@./meilisearch
 	uvicorn api:app --reload  # load web server with code autoreload
+
