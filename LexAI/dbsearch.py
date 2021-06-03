@@ -219,5 +219,3 @@ class Search:
             return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
-
-print(Search().query_ms('2020'))

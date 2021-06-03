@@ -4,7 +4,6 @@
 install_requirements:
 	@pip install -r requirements.txt
 	@pip3 install meilisearch
-	@pip install streamlit --use-feature=2020-resolver
 
 check_code:
 	@flake8 scripts/* LexAI/*.py
@@ -63,7 +62,6 @@ pypi:
 #      API
 # ----------------------------------
 run_api:
-<<<<<<< HEAD
 	uvicorn api:app --reload  # load web server with code autoreload
 
 
@@ -83,7 +81,6 @@ heroku_create_app:
 deploy_heroku:
 	-@git push heroku master
 	-@heroku ps:scale web=1
-=======
+
 	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
 
->>>>>>> ba42331d3018688202c1bcb27fce82d3b6762bad
