@@ -1,24 +1,27 @@
 import json
 import re
-import unicodedata
+from unicodedata import normalize
 from datetime import datetime
 from os import path
 from time import sleep, mktime
+from twittersearch import TwitterSearch
 
 import meilisearch
 import requests
 from bs4 import BeautifulSoup
 
 
-class Search:
+class Search(TwitterSearch):
     
     def __init__(self, url='http://127.0.0.1:7700', key='',
-                 indices=['eurlex', 'consultations']):
+                 indices=['eurlex', 'consultations', 'twitter_query', 
+                          'twitter_press', 'twitter_politicians']):
         
         ## run in terminal
         # curl -L https://install.meilisearch.com | sh
         # ./meilisearch
         
+        super().__init__()
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         for index in indices:
@@ -42,7 +45,12 @@ class Search:
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
                              'wordsPosition', 'exactness', 'desc(start_timestamp)', 
                              'desc(end_timestamp)']})
-            
+
+        for index in indices[2:]:
+            self.client.index(index).update_settings({
+                'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
+                                 'wordsPosition', 'exactness', 'desc(timestamp)']})
+
         self.log = {}
 
     def search_eurlex(self, query, page=1, lang='en', year=None):
@@ -63,11 +71,12 @@ class Search:
         r = requests.get(url, params=params)
         soup = BeautifulSoup(r.content, 'html.parser')
         
+        if 'No results found.' in str(soup.find_all('div', class_='alert alert-info')):
+            return
+        
+        
         page_results = soup.find_all('div', class_='SearchResult')
         final_results = []
-        
-        if len(page_results) == 0 or len(r.history) >= 2:
-            return
         
         for result in page_results:
             entry = {}
@@ -79,14 +88,14 @@ class Search:
             title = result.find('a', class_='title')
             col2 = result.find_all('div', class_='col-sm-6')[1].find_all('dd')
             date = list(filter(lambda v: re.match("\d{2}/\d{2}/\d{4}", v.text), col2))[0]
-            date = unicodedata.normalize('NFKD', date.text[:10])
+            dt = datetime.strptime(normalize('NFKD', date.text[:10]), "%d/%m/%Y")
             
-            entry['id'] = unicodedata.normalize('NFKD', celex)
-            entry['title'] = unicodedata.normalize('NFKD', title.text)
-            entry['author'] = unicodedata.normalize('NFKD', col2[0].text)
-            entry['date'] = date
-            entry['timestamp'] = mktime(datetime.strptime(date, "%d/%m/%Y").timetuple())
-            entry['link'] = unicodedata.normalize('NFKD', title['name'])
+            entry['id'] = normalize('NFKD', celex)
+            entry['title'] = normalize('NFKD', title.text)
+            entry['author'] = normalize('NFKD', col2[0].text)
+            entry['date'] = datetime.strftime(dt, "%Y/%m/%d")
+            entry['timestamp'] = mktime(dt.timetuple())
+            entry['link'] = normalize('NFKD', title['name'])
             final_results.append(entry)
         return final_results
     
@@ -175,49 +184,110 @@ class Search:
     def build_ms(self, query, pages=10, index='eurlex', **params):
         db = self.client.index(index)
         start_len = db.get_stats()['numberOfDocuments']
-
-        results = self.search_many(query, pages, index, **params)
-        update_id = db.add_documents(results)['updateId']
+        results = []
         
-        while db.get_update_status(update_id)['status'] != 'processed':
-            sleep(0.1)
-        end_len = db.get_stats()['numberOfDocuments']
+        while len(results) == 0:
+            if 'twitter' in index:
+                if 'query' in index:
+                    results = self.search_query(query, count=pages, **params)
+                else:
+                    results = self.search_username(query, count=pages)
+                
+                if len(results) == 0:
+                    print(datetime.now().strftime("%H:%M:%S") +
+                          ': Twitter API limit reached. Retrying in 60s')
+                    sleep(60)
+                    continue
+            else:
+                results = self.search_many(query, pages, index, **params)
+
+            update_id = db.add_documents(results)['updateId']
+            
+            while db.get_update_status(update_id)['status'] != 'processed':
+                sleep(0.1)
+            end_len = db.get_stats()['numberOfDocuments']
         
         return f"Found {len(results)} results. Added {end_len - start_len} new entries to {index} index"
 
-    def build_ms_many(self, queries, pages, rebuild, **params):
-        if not isinstance(queries, list):
-            queries = [queries]
+    def build_ms_many(self, queries='default', pages=50, indices=None, rebuild=0,
+                      **params):
+        if queries == 'default':
+            queries = [
+                'agriculture',
+                'energy',
+                'technology',
+                'finance',
+                'law',
+                'human rights',
+                'worker rights',
+                'fishing',
+                'euro',
+                'nuclear',
+                'climate',
+                'conservation',
+                'environment',
+                'politics',
+                'tax'
+            ]
+        elif not isinstance(queries, list):
+            queries = queries.split(',')
+
+        if indices is None:
+            indices = self.indices
+        elif not isinstance(indices, list):
+            indices = [indices]
         
-        log = {}
-        for index in self.indices:
+        for index in indices:
             if rebuild:
                 self.client.index(index).delete_all_documents()
                 print(f'Deleted all documents from {index} index')
             
+            self.log[index] = {}
+            self.log[index]['rebuild'] = rebuild
             start_len = self.client.index(index).get_stats()['numberOfDocuments']
-
-            query_log = {}
-            query_log['rebuild'] = rebuild
-            for query in queries:
-                print(f"Searching {pages} pages for {query} in {index}. ")
-                result = self.build_ms(query, pages, index, **params)
-                query_log[query] = result
+            
+            if not any(i in index for i in ['press', 'politicians']):
+                for query in queries:
+                    print(f"Searching {pages} pages/tweets for {query} in {index}. ")
+                    result = self.build_ms(query, pages, index, **params)
+                    self.log[index][query] = result
+                    print(result, '\n')
+            else:
+                queries = index.replace('twitter_', '')
+                print(f"Searching {pages} tweets for {queries} in {index}. ")
+                result = self.build_ms(queries, pages, index, **params)
+                self.log[index]['result'] = result
                 print(result, '\n')
-            log[index] = query_log
             
             end_len = self.client.index(index).get_stats()['numberOfDocuments']
             idx_result = f"Total: {end_len - start_len} new entries added to {index} index\n"
             
-            log[index]['complete'] = idx_result
-            self.log = log
+            self.log[index]['complete'] = idx_result
             print(idx_result)
-        return log
+        return self.log
 
     def query_ms(self, query, index='eurlex', n=20):
-        if index not in ['eurlex', 'consultations']:
+        if index not in self.indices:
             return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
+        
 
-print(Search().query_ms('2020'))
+search = Search()
+
+search.indices.remove('twitter_press')
+search.indices.remove('eurlex')
+search.indices.remove('consultations')
+search.client.index('twitter_press').delete_all_documents()
+print(search.indices)
+
+try:
+    size = 100
+    search.build_ms_many(pages=size, rebuild=1)
+except Exception as e:
+    print(e)
+    pass
+
+print(json.dumps(search.log, indent=2))
+with open('log.json', 'w') as file:
+    json.dump(search.log, file)

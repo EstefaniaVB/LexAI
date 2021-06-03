@@ -1,6 +1,10 @@
+import re
+from os.path import dirname, join
+
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
+
 
 def mep_info():
     xml = "https://www.europarl.europa.eu/meps/en/full-list/xml"
@@ -38,6 +42,7 @@ def mep_info():
                     data_mep[tag.lower()] = data
                 else:
                     data = data.replace('https:', '').replace('http:', '').replace('//www.', '')
+                    data = re.sub(r'\?.*', '', data).replace('@', '')
                     data_mep[tag.lower()] = data.replace(base, '').replace('/', '')
             except AttributeError:
                 data_mep[tag.lower()] = None
@@ -45,7 +50,7 @@ def mep_info():
         all_data[id] = data_mep
         
     df = pd.DataFrame.from_dict(all_data, orient='index')
-    df.to_csv('data/meps.csv')
+    df.to_csv(join(dirname(__file__), 'data/meps.csv'))
     
     print(f'Done. Extracted info on {len(df)} MEPs.')
     
