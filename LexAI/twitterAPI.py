@@ -30,8 +30,6 @@ def twitter_query(keyword, count):
         dict_['lang'].append(status['lang'])
         dict_['user_desc'].append(status['user']['description'])
         
-        df = pd.DataFrame(dict_)
-    
-    
-    
-    return df
+        #df = pd.DataFrame(dict_)
+
+    return dict_

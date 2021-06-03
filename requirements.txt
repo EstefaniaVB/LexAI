@@ -6,31 +6,20 @@ wheel>=0.29
 
 # data science
 numpy
-pandas
+pandas==1.2.1
 scikit-learn
 
-# tests/linter
-black
-coverage
-flake8
-pytest
-yapf
-
 # API
-gcsfs
-google-cloud-storage
-mlflow
-s3fs
-twython
-requests
+s3fs==2021.5.0
+twython==3.8.2
+requests==2.25.1
+fastapi==0.65.1
+uvicorn==0.13.4
 
 # utilities
 six>=1.14
-joblib
-memoized-property
-termcolor
 python-dotenv
 
 #
-streamlit
-meilisearch
+streamlit==0.82.0
+meilisearch==0.14.2
