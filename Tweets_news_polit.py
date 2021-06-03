@@ -28,8 +28,13 @@ python_tweets = Twython(CONSUMER_KEY, CONSUMER_SECRET)
 ### New outlets and politicians twitter data
 
 news = press["TWITTER USERNAME "]
-politicians = meps["twitter"]
+politicians = meps[["twitter"]].dropna()
 
+
+#Subsetting politicians in order to create multiple requests
+politicians_1set = politicians[:100]
+politicians_2set = politicians[100:200]
+politicians_3set = politicians[200:]
 
 #### Twitter limitation
 
@@ -41,21 +46,23 @@ politicians = meps["twitter"]
 #- 900 tweets 15 min
 #- 100000 in 24h
 
-#We can make 4 request 200 tweets + 1 request 100 tweets each 15 minutes
+#100 politicians (1set) 2 tweets --> 200
+#100 politicians (2set) 2 tweets --> 200
+#94 politicians (2set) 2 tweets -->  188
+#58 News outlets 3 tweets       -->  174
+#Total = 762
 
 
 #requesting the tweets from the news
 
 def get_politicians_data():
-    news_tweets=[]
+    news_data=[]
     time.sleep(60*15) #run every 15min
     for outlet in news:
-        news_tweets.append(python_tweets.get_user_timeline(screen_name=outlet, count=3))
+        news_data.append(python_tweets.get_user_timeline(screen_name=outlet, count=3))
         
-    news_data = pd.DataFrame(news_tweets)
-    return news_data
-    
-
+    news_tweets = pd.DataFrame(news_data)
+    return news_tweets
 
 
 #Selecting relevant information
@@ -92,14 +99,19 @@ def get_news_data_filtered():
 #requesting the tweets from the politicians
 
 def get_politicians_data():
-    meps_tweets = []
-    time.sleep(60*15)
-    for politic in politicians:
+    meps_data = []
+    time.sleep(60*15) #seting a sleep time of 15 min
+    for politic in politicians_1set:
         print(f"Downloading tweets from: ...{politic}")
-        meps_tweets.append(python_tweets.get_user_timeline(screen_name=politic, count=1))
-    
-    meps_data = pd.DataFrame(meps_tweets)
-    return meps_data
+        meps_data.append(python_tweets.get_user_timeline(screen_name=politic, count=2))
+    for politic in politicians_2set:
+        print(f"Downloading tweets from: ...{politic}")
+        meps_data.append(python_tweets.get_user_timeline(screen_name=politic, count=2))
+    for politic in politicians_3set:
+        print(f"Downloading tweets from: ...{politic}")
+        meps_data.append(python_tweets.get_user_timeline(screen_name=politic, count=2))
+        meps_tweets = pd.DataFrame(meps_data)
+    return meps_tweets
 
 
 def get_politicians_data_filtered():
