@@ -1,2 +1,1 @@
-cat runtime.txt
 python-3.8.6
