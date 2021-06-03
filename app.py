@@ -13,14 +13,14 @@ import requests
 
 
 ## TWITTER
-lexai_twitter_url = "http://127.0.0.1:8000/predict"
-tweet_params=dict(keyword=query)
-tweet_likes = requests.get(lexai_twitter_url,params=tweet_params).json()
+#lexai_twitter_url = "http://127.0.0.1:8000/predict"
+#tweet_params=dict(keyword=query)
+#tweet_likes = requests.get(lexai_twitter_url,params=tweet_params).json()
 
 '''
-## Twitter says
+## Twitter says nothing
 '''
-st.write('Tweets about this topic were liked by',tweet_likes[0], 'people on Twitter')
+#st.write('Tweets about this topic were liked by',tweet_likes[0], 'people on Twitter')
 
 ## EURLEX
 '''
