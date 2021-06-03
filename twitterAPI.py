@@ -23,15 +23,29 @@ python_tweets = Twython(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])
 
 
 
+python_tweets = Twython(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])    
+
+
+def get_places():
+    
+    '''creates a list of places and countries in europe, for locality-filtering the output tweets'''
+    cities = pd.read_csv('list_cities3.csv',delimiter=';')
+    
+    list_cities = list(cities['city'])
+    list_cities = [element.lower() for element in list_cities]
+    list_countries = list(set(cities['county']))
+    list_countries = [element.lower() for element in list_countries]
+    list_eur = list_cities + list_countries
+    return list_eur
+
+
 def gtrans(text,dest='en'):
     
     '''this function represents the google translate API. use wisely!
-    its expensive (20$/1mio characters, makes only 5000 tweets).
-    
-    if environ.get("PROJECT_ID", "") does not work, put it manually as string'''
+        its expensive (20$/1mio characters, makes only 5000 tweets)'''
     
     
-    project_id = environ.get("PROJECT_ID", "")    # or manually e.g.'lewagon-bootcamp-timwolfram'
+    project_id = 'lewagon-bootcamp-timwolfram' #environ.get("PROJECT_ID", "")
 
     parent = f"projects/{project_id}"
     client = translate.TranslationServiceClient()
@@ -52,6 +66,14 @@ def gtrans(text,dest='en'):
     return output_trans
 
 
+def remove_duplicates(tweets):
+    li = []
+    for tweet in tweets:
+        if not tweet in li:
+            li.append(tweet)
+
+    return li
+
 
 def get_tweets(query,count,result_type='mixed'):   #count: max 10 because its looking for all 19 languages at once
 
@@ -70,7 +92,7 @@ def get_tweets(query,count,result_type='mixed'):   #count: max 10 because its lo
                     'fi', 'hr', 'lt'
                 ]
 
-    dict_ = {}
+    #dict_ = {}
     
     result_type = result_type # other options 'mixed','popular','recent'
 
@@ -115,6 +137,7 @@ def get_tweets(query,count,result_type='mixed'):   #count: max 10 because its lo
 
 
         for status in python_tweets.search(**query)['statuses']:
+            dict_ = {}
             dict_['id'] = status['id']
             dict_['user'] = status['user']['screen_name']
             dict_['date'] = status['created_at']
@@ -136,5 +159,22 @@ def get_tweets(query,count,result_type='mixed'):   #count: max 10 because its lo
             list_tweets.append(dict_) 
     
     return list_tweets
+
+
+def local_filter(tweets, list_eur=get_places(), no_loc=True):
+    
+    '''filters the output of the get_tweets function to only get european posts'''
+    
+    if no_loc == True:
+        list_eur.append('')
+        
+    for tweet in tweets:
+        if not tweet['user_loc'].split(',')[0] in list_eur:
+            tweets.remove(tweet)
+        
+        
+    return tweets
+
+
 
 
