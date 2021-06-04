@@ -62,15 +62,15 @@ pypi:
 #      Manage DB
 # ----------------------------------
 build_ms:
-	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@echo "IMPORTANT: meilisearch must be running to work"
 	@python LexAI/dbsearch.py build_ms_many
 
 export_json:
-	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@echo "IMPORTANT: meilisearch must be running to work"
 	@python LexAI/dbsearch.py export_json
 
 import_json:
-	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@echo "IMPORTANT: meilisearch must be running to work"
 	@python LexAI/dbsearch.py import_json
 
 # ----------------------------------

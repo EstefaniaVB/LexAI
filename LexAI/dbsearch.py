@@ -16,43 +16,38 @@ from LexAI.twittersearch import TwitterSearch
 
 class Search(TwitterSearch):
     
-    def __init__(self, url='http://127.0.0.1:7700', key='',
+    def __init__(self, url='http://35.223.18.2', 
+                 key='OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx',
                  indices=['eurlex', 'consultations', 'twitter_query', 
                           'twitter_press', 'twitter_politicians'],
                  trans=False):
-        
+
         ## run in terminal
         # curl -L https://install.meilisearch.com | sh
         # ./meilisearch
-        
+
         super().__init__()
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
-        
-        if 'twitter' in [idx['uid'] for idx in self.client.get_indexes()]:
-            print('Deleting old twitter index...', end='')
+        ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
+
+        for index in indices:
+            if index not in ms_indices:
+                self.client.create_index(index, {'primaryKey': 'id'})
+                print(f'Created index: {index}')
+
+        if 'twitter' in ms_indices:
+            print('Deleting old twitter index... ', end='')
             self.client.index('twitter').delete()
             print('Done.')
-        
-        for index in indices:
-            try:
-                self.client.create_index(index)
-                print(f'Created {index} index')
-            except Exception:
-                pass
-            
-        
-            
+
         self.client.index(indices[0]).update_settings({
-            'displayedAttributes': ['title', 'author', 'date', 'link'],
             'searchableAttributes': ['title', 'author', 'date'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
                              'wordsPosition', 'exactness', 'desc(timestamp)']})
-        
+
         self.client.index(indices[1]).update_settings({
-            'displayedAttributes': ['title', 'topics', 'type_of_act', 
-                                     'start_date', 'end_date', 'status', 'link'],
             'searchableAttributes': ['title', 'topics', 'type_of_act', 'start_date', 
                                      'end_date', 'status'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
@@ -251,10 +246,12 @@ class Search(TwitterSearch):
         elif not isinstance(queries, list):
             queries = queries.split(',')
 
+        pages = int(pages)
+        
         if indices is None:
             indices = self.indices
         elif not isinstance(indices, list):
-            indices = [indices]
+            indices = indices.split(',')
         
         for index in indices:
             db = self.client.index(index)
@@ -328,7 +325,7 @@ class Search(TwitterSearch):
         
         for index, filename in zip(indices, files):
             try:
-                self.client.create_index(index)
+                self.client.create_index(index, {'primaryKey': 'id'})
                 print(f'Created {index} index')
             except Exception:
                 pass
