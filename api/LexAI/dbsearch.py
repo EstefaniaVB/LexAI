@@ -12,14 +12,14 @@ from bs4 import BeautifulSoup
 
 class Search:
     
-    def __init__(self, url='http://0.0.0.0:7700', key='',
+    def __init__(self, url='http://35.223.18.2/', key='OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx',
                  indices=['eurlex', 'consultations']):
         
         ## run in terminal
         # curl -L https://install.meilisearch.com | sh
         # ./meilisearch
         
-        self.client = meilisearch.Client(url)
+        self.client = meilisearch.Client(url,key)
         self.indices = indices
         for index in indices:
             try:
