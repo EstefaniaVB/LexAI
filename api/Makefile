@@ -61,9 +61,9 @@ pypi:
 # ----------------------------------
 #      API
 # ----------------------------------
-run_api:
-	uvicorn api:app --reload  # load web server with code autoreload
-
+run_meili:
+	@curl -L https://install.meilisearch.com | sh
+	@./meilisearch
 
 # ----------------------------------
 #         HEROKU COMMANDS
@@ -82,5 +82,5 @@ deploy_heroku:
 	-@git push heroku master
 	-@heroku ps:scale web=1
 
-	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
+
 

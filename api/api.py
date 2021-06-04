@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from LexAI.twitterAPI import twitter_query
 from LexAI.dbsearch import Search
 
 #from predictions import get_prediction
@@ -23,23 +22,6 @@ search = Search()  # meilisearch searcher/builder
 @app.get("/")
 def index():
     return {"greeting": "Hello Estefania"}
-
-# Predict endpoint
-@app.get("/predict")
-def predict(keyword):
-    #PSEUDO-CODE
-    #Regulations list
-        #regulations=get_regulation(keyword)
-    #Consultations list
-        #consultations=get_consultation(keyword)
-    #Twitter list
-    tweets=twitter_query(keyword,10)
-    tweet_likes=tweets['favorite_count'].sum()
-    tweet_followers=tweets['followers_count'].sum()
-    #return regulations,consultations,tweet_volume
-
-    # print keyword entered by user
-    return str(tweet_likes), str(tweet_followers)
 
 @app.get("/query")
 def query(query, index='eurlex', n=20):
