@@ -24,11 +24,11 @@ class TwitterSearch:
     # This method can only return up to 3,200 of a user's most recent Tweets. 
     # Native retweets of other statuses by the user is included in this total, 
     # regardless of whether include_rts is set to false when requesting this resource.
-    
+
     #- We can just retrieve 200 tweets/request
     #- 900 tweets 15 min
     #- 100000 in 24h
-    
+
     def __init__(self, id_key='PROJECT_G'):
         # Enter your keys/secrets as strings in the following fields
         self.creds = {}
@@ -127,7 +127,9 @@ class TwitterSearch:
         for lang in lang_list:
             query_trans = self.gtrans(query, dest=lang)
 
-            params = {'q': query_trans, 'result_type': result_type, 'count': count,
+            params = {'q': query_trans, 
+                      'result_type': result_type, 
+                      'count': count,
                       'tweet_mode': 'extended'}
             #if geocode.get(lang, None) is not None:  # returns no tweets if used
             #    params['geocode'] = geocode.get(lang, None)
@@ -135,6 +137,10 @@ class TwitterSearch:
             results = self.python_tweets.search(**params)['statuses']
             if not len(results) == 0:
                 tweets.extend([self.extract_info(result) for result in results])
+            else:
+                print(datetime.now().strftime("%H:%M:%S") +
+                      ': Twitter API limit reached. Retrying in 60s')
+                sleep(60)
 
         return tweets
 
@@ -149,7 +155,7 @@ class TwitterSearch:
             usernames = usernames.split(',')
         
         tweets = []
-        for i, username in enumerate(usernames[:10]):
+        for i, username in enumerate(usernames):
             if i % 25 == 0:
                 print(f'Processed {i} users')
                 

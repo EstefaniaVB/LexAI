@@ -283,7 +283,7 @@ print(search.indices)
 
 try:
     size = 100
-    search.build_ms_many(pages=size, rebuild=1)
+    search.build_ms_many(pages=size, rebuild=0)
 except Exception as e:
     print(e)
     pass
