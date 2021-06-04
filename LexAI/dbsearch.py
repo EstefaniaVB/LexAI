@@ -29,12 +29,20 @@ class Search(TwitterSearch):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
+        
+        if 'twitter' in [idx['uid'] for idx in self.client.get_indexes()]:
+            print('Deleting old twitter index...', end='')
+            self.client.index('twitter').delete()
+            print('Done.')
+        
         for index in indices:
             try:
                 self.client.create_index(index)
                 print(f'Created {index} index')
             except Exception:
                 pass
+            
+        
             
         self.client.index(indices[0]).update_settings({
             'displayedAttributes': ['title', 'author', 'date', 'link'],
