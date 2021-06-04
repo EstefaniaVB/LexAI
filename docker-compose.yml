@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  server:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api/:/api/
+    command: bash -c "uvicorn api.api:app --host 0.0.0.0 --port 8000"
+    ports:
+      - 8000:8000
+  meilisearch:
+    image: getmeili/meilisearch
+    command: ./meilisearch --no-analytics=true
+    ports:
+      - 7700:7700
