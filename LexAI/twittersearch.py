@@ -29,8 +29,10 @@ class TwitterSearch:
     #- 900 tweets 15 min
     #- 100000 in 24h
 
-    def __init__(self, id_key='PROJECT_G'):
+    def __init__(self, id_key='PROJECT_G', trans=False):
         # Enter your keys/secrets as strings in the following fields
+        self.trans = trans
+        
         self.creds = {}
         self.creds['CONSUMER_KEY'] = os.getenv('CONSUMER_KEY')
         self.creds['CONSUMER_SECRET'] = os.getenv('CONSUMER_SECRET')
@@ -46,10 +48,9 @@ class TwitterSearch:
         
     def load_users(self):
         ### New outlets and politicians twitter data
-        #press = pd.read_csv("data/press.csv", delimiter=";")
-        #press = list(press["TWITTER USERNAME "].dropna())
+        press = pd.read_csv(join(dirname(__file__), 'data/press.csv'), delimiter=",")
         meps = pd.read_csv(join(dirname(__file__), 'data/meps.csv'), delimiter=",")
-        press = meps.copy()
+        
         press = list(press['twitter'].dropna())
         politicians = list(meps["twitter"].dropna())
         return press, politicians
@@ -91,7 +92,7 @@ class TwitterSearch:
     def gtrans(self, text, dest='en'):
         '''this function represents the google translate API. use wisely!
         its expensive (20$/1mio characters, makes only 5000 tweets).'''
-        if len(text) == 0:
+        if len(text) == 0 or not self.trans:
             return
         response = self.g_client.translate_text(contents=[text], 
                                                 target_language_code=dest, 
@@ -102,7 +103,7 @@ class TwitterSearch:
 
         return output_trans
 
-    def search_query(self, query, count=5, result_type='mixed', lang='all'):
+    def search_query(self, query, count=5, result_type='mixed', lang=None):
         # count: max 10 because its looking for all 19 languages at once
         '''this function uses the twitter search endpoint with max 190 requests/15 min
         the output is a list of dictionaries with one dict per tweet.
@@ -116,15 +117,17 @@ class TwitterSearch:
         
         lang_list = ['en','de','fr','el','it','es', 'pl', 'ro', 'nl', 
                      'hu', 'pt', 'sv', 'cs', 'bg', 'sk', 'da', 'fi', 'hr', 
-                     'lt'] if lang == ['all'] else [l.lower() for l in lang]
+                     'lt'] if lang is None else [l.lower() for l in lang]
         geocode = {'en': '51.51753,-0.11214,1000km',
-                    'fr': '47.22283,2.07099,1000km',
-                    'es': '40.42955,-3.67930,1000km',
-                    'pt': '39.82059,-7.49342,1000km',
-                    'other': '50.0598058,14.3255426,1000km'}
+                   'fr': '47.22283,2.07099,1000km',
+                   'es': '40.42955,-3.67930,1000km',
+                   'pt': '39.82059,-7.49342,1000km',
+                   'other': '50.0598058,14.3255426,1000km'}
         
         tweets = []
+        print('Searched query in languages:', end='')
         for lang in lang_list:
+            print(lang, end=', ')
             query_trans = self.gtrans(query, dest=lang)
 
             params = {'q': query_trans, 
@@ -133,19 +136,15 @@ class TwitterSearch:
                       'tweet_mode': 'extended'}
             #if geocode.get(lang, None) is not None:  # returns no tweets if used
             #    params['geocode'] = geocode.get(lang, None)
-
+            
             results = self.python_tweets.search(**params)['statuses']
-            if not len(results) == 0:
+            if len(results) != 0:
                 tweets.extend([self.extract_info(result) for result in results])
-            else:
-                print(datetime.now().strftime("%H:%M:%S") +
-                      ': Twitter API limit reached. Retrying in 60s')
-                sleep(60)
-
+        print()
         return tweets
 
-    def search_username(self, usernames='all', count=10):
-        if usernames == 'all':
+    def search_username(self, usernames=None, count=10):
+        if usernames == None:
             usernames = list(chain(*self.load_users()))
         elif usernames == 'press':
             usernames = self.load_users()[0]
@@ -154,16 +153,44 @@ class TwitterSearch:
         elif not isinstance(usernames, list):
             usernames = usernames.split(',')
         
+        print(f'\nSearching {len(usernames)} users\n')
         tweets = []
         for i, username in enumerate(usernames):
-            if i % 25 == 0:
+            if i % 10 == 0:
                 print(f'Processed {i} users')
-                
+
             query = {'screen_name': username,
                      'count': count,
                      'tweet_mode': 'extended'}
             
-            results = self.python_tweets.get_user_timeline(**query)
+            # feature not currently working
+            """
+            start_t = int(datetime.now().strftime("%s"))
+            end_t = start_t
+            results = []
+            
+
+            while len(results) == 0 and end_t - start_t < 20*60: 
+            """
+            try:
+                results = self.python_tweets.get_user_timeline(**query)
+            except Exception:
+                # break
+                continue 
+            
             if not len(results) == 0:
                 tweets.extend([self.extract_info(result) for result in results])
+                
+                # feature not currently working
+                """
+                else:
+                    print(datetime.now().strftime("%H:%M:%S:"),
+                          'Twitter API limit reached. Retrying in 60s',
+                          f'(Attempt {(end_t - start_t)//60}/20)')
+                    sleep(60)
+                    end_t = int(datetime.now().strftime("%s"))
+                """
+        print('Processed all users')
         return tweets
+    
+

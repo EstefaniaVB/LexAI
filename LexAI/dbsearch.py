@@ -1,21 +1,25 @@
 import json
+import os
 import re
-from unicodedata import normalize
+import sys
 from datetime import datetime
-from os import path
-from time import sleep, mktime
-from twittersearch import TwitterSearch
+from os.path import dirname, exists, join
+from time import mktime, sleep
+from unicodedata import normalize
 
 import meilisearch
 import requests
 from bs4 import BeautifulSoup
+
+from LexAI.twittersearch import TwitterSearch
 
 
 class Search(TwitterSearch):
     
     def __init__(self, url='http://127.0.0.1:7700', key='',
                  indices=['eurlex', 'consultations', 'twitter_query', 
-                          'twitter_press', 'twitter_politicians']):
+                          'twitter_press', 'twitter_politicians'],
+                 trans=False):
         
         ## run in terminal
         # curl -L https://install.meilisearch.com | sh
@@ -24,11 +28,12 @@ class Search(TwitterSearch):
         super().__init__()
         self.client = meilisearch.Client(url, key)
         self.indices = indices
+        self.trans = trans
         for index in indices:
             try:
                 self.client.create_index(index)
                 print(f'Created {index} index')
-            except:
+            except Exception:
                 pass
             
         self.client.index(indices[0]).update_settings({
@@ -39,9 +44,9 @@ class Search(TwitterSearch):
         
         self.client.index(indices[1]).update_settings({
             'displayedAttributes': ['title', 'topics', 'type_of_act', 
-                                     'start_date', 'end_date', 'link'],
+                                     'start_date', 'end_date', 'status', 'link'],
             'searchableAttributes': ['title', 'topics', 'type_of_act', 'start_date', 
-                                     'end_date'],
+                                     'end_date', 'status'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
                              'wordsPosition', 'exactness', 'desc(start_timestamp)', 
                              'desc(end_timestamp)']})
@@ -121,47 +126,48 @@ class Search(TwitterSearch):
         
         final_results = []
         
-        for initiative in content["initiativeResultDtoes"]:
-            consultations = {}
+        for res in content["initiativeResultDtoes"]:
+            entry = {}
             
-            try:
-                start_date = initiative["currentStatuses"][0]["feedbackStartDate"]
-                end_date = initiative["currentStatuses"][0]["feedbackEndDate"]
-            except IndexError:
+            entry['id'] = res.get("id", None)
+            entry['title'] = res.get("shortTitle", None)
+            entry['type_of_act'] = res.get("foreseenActType", None)
+            topics = res.get("topics", []) if len(res.get("topics", [])) != 0 else [{}]
+            entry['topics'] = topics[0].get("label", None)
+            
+            status = res.get("currentStatuses", [])
+            if len(status) != 0:
+                entry['status'] = status[0].get("receivingFeedbackStatus", None)
+                start_date = status[0].get("feedbackStartDate", None)
+                end_date = status[0].get("feedbackEndDate", None)
+            else:
+                entry['status'] = None
                 start_date = None
                 end_date = None
-                
-            consultations['id'] = initiative["id"]
-            consultations['title'] = initiative["shortTitle"]
-            consultations['type_of_act'] = initiative["foreseenActType"]
-            # consultations['topics'] = initiative["topics"][0]["label"]
-            try:
-                consultations['topics'] = initiative["topics"][0]["label"]
-            except:
-                consultations['topics'] = "Unknown"
-            consultations['status'] = initiative["currentStatuses"][0]["receivingFeedbackStatus"]
             
             if start_date is not None:
-                consultations['start_date'] = start_date[:10]
-                consultations['start_timestamp'] = mktime(datetime.strptime(start_date, "%Y/%m/%d %H:%M:%S").timetuple())
+                entry['start_date'] = start_date[:10]
+                ts = mktime(datetime.strptime(start_date, "%Y/%m/%d %H:%M:%S").timetuple())
+                entry['start_timestamp'] = ts
             else:
-                consultations['start_date'] = 'Unknown'
-                consultations['start_timestamp'] = 0
+                entry['start_date'] = None
+                entry['start_timestamp'] = 0
                 
             if end_date is not None:
-                consultations['end_date'] = end_date[:10]
-                consultations['end_timestamp'] = mktime(datetime.strptime(end_date, "%Y/%m/%d %H:%M:%S").timetuple())
+                entry['end_date'] = end_date[:10]
+                ts = mktime(datetime.strptime(end_date, "%Y/%m/%d %H:%M:%S").timetuple())
+                entry['end_timestamp'] = ts
             else:
-                consultations['end_date'] = 'Unknown'
-                consultations['end_timestamp'] = 0
+                entry['end_date'] = None
+                entry['end_timestamp'] = 0
 
             
             # links sometimes don't work, plz fix :)
             link_url = "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/"
-            title_link = consultations['title'].replace(" ","-")
-            consultations['link']= f"{link_url}{consultations['id']}-{title_link}_en"
+            title_link = entry['title'].replace(" ","-")
+            entry['link']= f"{link_url}{entry['id']}-{title_link}_en"
             
-            final_results.append(consultations)
+            final_results.append(entry)
         return final_results
 
     def search_many(self, query, pages=10, index='eurlex', **params):
@@ -186,7 +192,10 @@ class Search(TwitterSearch):
         start_len = db.get_stats()['numberOfDocuments']
         results = []
         
-        while len(results) == 0:
+        start_t = int(datetime.now().strftime("%s"))
+        end_t = start_t
+        
+        while len(results) == 0 and end_t - start_t < 20*60:
             if 'twitter' in index:
                 if 'query' in index:
                     results = self.search_query(query, count=pages, **params)
@@ -194,9 +203,11 @@ class Search(TwitterSearch):
                     results = self.search_username(query, count=pages)
                 
                 if len(results) == 0:
-                    print(datetime.now().strftime("%H:%M:%S") +
-                          ': Twitter API limit reached. Retrying in 60s')
+                    print(datetime.now().strftime("%H:%M:%S:"),
+                          'Twitter API limit reached. Retrying in 60s',
+                          f'(Attempt {(end_t - start_t)//60}/20)')
                     sleep(60)
+                    end_t = int(datetime.now().strftime("%s"))
                     continue
             else:
                 results = self.search_many(query, pages, index, **params)
@@ -238,13 +249,16 @@ class Search(TwitterSearch):
             indices = [indices]
         
         for index in indices:
+            db = self.client.index(index)
             if rebuild:
-                self.client.index(index).delete_all_documents()
+                update_id = db.delete_all_documents()['updateId']
+                while db.get_update_status(update_id)['status'] != 'processed':
+                    sleep(0.1)
                 print(f'Deleted all documents from {index} index')
             
             self.log[index] = {}
             self.log[index]['rebuild'] = rebuild
-            start_len = self.client.index(index).get_stats()['numberOfDocuments']
+            start_len = db.get_stats()['numberOfDocuments']
             
             if not any(i in index for i in ['press', 'politicians']):
                 for query in queries:
@@ -259,7 +273,7 @@ class Search(TwitterSearch):
                 self.log[index]['result'] = result
                 print(result, '\n')
             
-            end_len = self.client.index(index).get_stats()['numberOfDocuments']
+            end_len = db.get_stats()['numberOfDocuments']
             idx_result = f"Total: {end_len - start_len} new entries added to {index} index\n"
             
             self.log[index]['complete'] = idx_result
@@ -272,22 +286,73 @@ class Search(TwitterSearch):
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
         
+    def export_json(self, indices=None):
+        if indices is None:
+            indices = [idx['uid'] for idx in self.client.get_indexes()]
+        elif not isinstance(indices, list):
+            indices = indices.split(',')
+        
+        folder = join(dirname(dirname(__file__)), 'data.json')
+        if not exists(folder):  # if folder doesn't exist
+            os.makedirs(folder)  # create folder
+        
+        for index in indices:
+            size = self.client.index(index).get_stats().get('numberOfDocuments', 0)
+            export = self.client.index(index).get_documents({'limit':size})
+            
+            filepath = join(folder, f'{index}.json')
+            
+            with open(filepath, 'w') as file:
+                json.dump(export, file)
+            print(f'\nExported {size} entries from {index} to data.json/{index}.json')
+    
+    def import_json(self, replace=False):
+        folder = join(dirname(dirname(__file__)), 'data.json')
+        if not exists(folder):  # if folder doesn't exist
+            print('No files found.')
+            return
+        
+        files = os.listdir(folder)
+        indices = [file.replace('.json', '') for file in files]
+        if len(files) == 0:  # if no files
+            print('No files found.')
+            return
+        
+        for index, filename in zip(indices, files):
+            try:
+                self.client.create_index(index)
+                print(f'Created {index} index')
+            except Exception:
+                pass
+            
+            db = self.client.index(index)
 
-search = Search()
+            if replace:
+                update_id = db.delete_all_documents()['updateId']
+                while db.get_update_status(update_id)['status'] != 'processed':
+                    sleep(0.1)
+                print(f'\nDeleted all documents from {index} index')
+                
+            filepath = join(folder, filename)
+            with open(filepath, 'r') as file:
+                json_ = json.load(file)
+            print(f'\n{filename} contains {len(json_)} entries')
+            
+            start_len = db.get_stats()['numberOfDocuments']
+            update_id = db.add_documents(json_)['updateId']
+            while db.get_update_status(update_id)['status'] != 'processed':
+                sleep(0.1)
+                if db.get_update_status(update_id)['status'] == 'failed':
+                    break
+            
+            end_len = db.get_stats()['numberOfDocuments']
+            print(f'Imported {end_len - start_len} entries to {index}')
 
-search.indices.remove('twitter_press')
-search.indices.remove('eurlex')
-search.indices.remove('consultations')
-search.client.index('twitter_press').delete_all_documents()
-print(search.indices)
 
-try:
-    size = 100
-    search.build_ms_many(pages=size, rebuild=0)
-except Exception as e:
-    print(e)
-    pass
+if __name__ == '__main__':
+    if len(sys.argv) > 2:
+        kwargs = {kwarg.split("=")[0]: kwarg.split("=")[1] for kwarg in sys.argv[2:]}
+        getattr(Search(), sys.argv[1])(**kwargs)
+    elif len(sys.argv) == 2:
+        getattr(Search(), sys.argv[1])()
 
-print(json.dumps(search.log, indent=2))
-with open('log.json', 'w') as file:
-    json.dump(search.log, file)

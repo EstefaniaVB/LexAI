@@ -28,7 +28,7 @@ clean:
 
 install:
 	@pip install . -U
-	@pip3 install meilisearch
+	@pip install -r requirements.txt
 	@curl -L https://install.meilisearch.com | sh
 
 all: clean install test black check_code
@@ -57,6 +57,21 @@ pypi_test:
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
+
+# ----------------------------------
+#      Manage DB
+# ----------------------------------
+build_ms:
+	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@python LexAI/dbsearch.py build_ms_many
+
+export_json:
+	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@python LexAI/dbsearch.py export_json
+
+import_json:
+	@echo "IMPORTANT: run ./meilisearch in seperate terminal"
+	@python LexAI/dbsearch.py import_json
 
 # ----------------------------------
 #      API
