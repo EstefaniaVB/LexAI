@@ -1,0 +1,33 @@
+.gitignore
+Dockerfile
+MANIFEST.in
+Makefile
+Procfile
+README.md
+api.py
+app.py
+requirements.txt
+runtime.txt
+setup.py
+setup.sh
+twitter_credentials.json
+.github/workflows/pythonpackage.yml
+LexAI/__init__.py
+LexAI/dbsearch.py
+LexAI/twitterAPI.py
+LexAI.egg-info/PKG-INFO
+LexAI.egg-info/SOURCES.txt
+LexAI.egg-info/dependency_links.txt
+LexAI.egg-info/not-zip-safe
+LexAI.egg-info/requires.txt
+LexAI.egg-info/top_level.txt
+LexAI/data/.keep
+notebooks/.keep
+notebooks/Estefania Public Consultations.ipynb
+notebooks/Pub_cons_api.py
+notebooks/claire tests code.ipynb
+notebooks/claire_deployment_api_endpoint.ipynb
+notebooks/data.json
+notebooks/eurlex-notebook.ipynb
+scripts/LexAI-run
+tests/__init__.py
