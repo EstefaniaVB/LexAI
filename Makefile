@@ -62,7 +62,7 @@ pypi:
 #      API
 # ----------------------------------
 run_api:
-	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
+	@uvicorn api:app --reload  # load web server with code autoreload
 
 
 

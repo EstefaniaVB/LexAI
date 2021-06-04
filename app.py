@@ -26,8 +26,9 @@ import requests
 '''
 ## REGULATIONS
 '''
-lexai_eurlex_url = "http://127.0.0.1:8000/query/"
-eurlex_params=dict(query=query,index=eurlex)
-eurlex = requests.get(lexai_eurlex_url,params=eurlex_params).json()
+lexai_eurlex_url = "http://35.223.18.2/indexes/eurlex/search"
+eurlex_params=dict(q=query)
+headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+eurlex = requests.get(lexai_eurlex_url,params=eurlex_params,headers=headers).json()
 st.write(eurlex)
 
