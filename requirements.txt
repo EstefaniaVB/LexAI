@@ -32,3 +32,5 @@ python-dotenv
 # search/database
 meilisearch
 python-dotenv
+
+streamlit
