@@ -4,7 +4,7 @@ from unicodedata import normalize
 from datetime import datetime
 from os import path
 from time import sleep, mktime
-from twittersearch import TwitterSearch
+from LexAI.twittersearch import TwitterSearch
 
 import meilisearch
 import requests
@@ -271,23 +271,4 @@ class Search(TwitterSearch):
             return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
-        
 
-search = Search()
-
-search.indices.remove('twitter_press')
-search.indices.remove('eurlex')
-search.indices.remove('consultations')
-search.client.index('twitter_press').delete_all_documents()
-print(search.indices)
-
-try:
-    size = 100
-    search.build_ms_many(pages=size, rebuild=0)
-except Exception as e:
-    print(e)
-    pass
-
-print(json.dumps(search.log, indent=2))
-with open('log.json', 'w') as file:
-    json.dump(search.log, file)

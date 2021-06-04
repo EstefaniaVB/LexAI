@@ -62,5 +62,5 @@ pypi:
 #      API
 # ----------------------------------
 run_api:
+	@curl -L https://install.meilisearch.com | sh
 	@./meilisearch& uvicorn api:app --reload  # load web server with code autoreload
-
