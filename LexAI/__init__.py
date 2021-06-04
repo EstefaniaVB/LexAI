@@ -1,5 +1,4 @@
-from os.path import isfile
-from os.path import dirname
+from os.path import isfile, dirname
 
 version_file = '{}/version.txt'.format(dirname(__file__))
 
