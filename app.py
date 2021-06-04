@@ -1,8 +1,25 @@
 import streamlit as st
+
+st.set_page_config(layout="wide",initial_sidebar_state="expanded")
+c1, c2, c3, c4 = st.beta_columns((2, 1, 1, 1))
+
 '''
-# LexAI Website !!!
+# LexAI
 It's beautiful
 '''
+
+with st.form("my_form"):
+    st.write("Search by regulation:")
+    checkbox_val = st.checkbox("On Force")
+    checkbox_val = st.checkbox("...")
+
+    # Apply the filters
+    submitted = st.form_submit_button("Apply")
+    if submitted:
+        st.write("slider", "checkbox", checkbox_val)
+
+st.write("Outside the form")
+
 
 
 # API QUERIES
@@ -22,6 +39,8 @@ import requests
 ## Twitter says nothing
 '''
 #st.write('Tweets about this topic were liked by',tweet_likes[0], 'people on Twitter')
+
+## Dashboard Style
 
 ## EURLEX
 '''
