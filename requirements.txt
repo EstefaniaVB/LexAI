@@ -40,7 +40,6 @@ streamlit
 
 
 #stramlit app
-io
 typing 
 markdown
 matplotlib
