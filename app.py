@@ -16,6 +16,7 @@ import datetime
 import pandas as pd
 from dateutil.relativedelta import relativedelta # to add days or years
 from IPython.core.display import display, HTML
+from datetime import date
 
 
 st.set_page_config(layout="wide",initial_sidebar_state="expanded")
@@ -35,16 +36,27 @@ def get_regulation():
     reg = []
     for i in eurlex:
         #It would be nice to have a list and small text
-        #reg.append(st.write(eurlex[i]['title']))
+        reg.append(st.write(eurlex[i]['title']))
         reg.append(st.write(eurlex[i]['author']))
-        reg.append(st.write(eurlex[i]['date']))
+        reg.append(st.write(pd.to_datetime(eurlex[i]['date']).date()))
         reg.append(st.write(eurlex[i]['link']))
     return reg
+
+def get_regulation2():
+    reg = []
+    for i in eurlex:
+        #It would be nice to have a list and small text
+        title=eurlex[i]['title']
+        author= eurlex[i]['author']
+        date= pd.to_datetime(eurlex[i]['date']).date()
+        link = eurlex[i]['link']
+        reg.append({"title":title,"author":author,"date":date,"link":link})
+    return  pd.DataFrame(reg)
 
 
 def get_consultations():
     lexai_eurlex_url = "http://127.0.0.1:8000/query"
-    consults_params=dict(query=query,index='consultations',n=50)
+    consults_params=dict(query=query,index='consultations',n=100)
     consults = requests.get(lexai_eurlex_url,params=consults_params).json()
     consultations = []
     for i in consults:
@@ -56,7 +68,7 @@ def get_consultations():
     return consultations
 
 def get_news():
-    consult_params=dict(query=query,index='twitter_press',n=10)
+    consult_params=dict(query=query,index='twitter_press',n=50)
     press = requests.get(lexai_eurlex_url,params=consult_params).json()
     html_code =[]
     for i in press:
@@ -69,7 +81,7 @@ def get_news():
     return html_code
 
 def get_news2():
-    consult_params=dict(query=query,index='twitter_press',n=50)
+    consult_params=dict(query=query,index='twitter_press',n=100)
     press = requests.get(lexai_eurlex_url,params=consult_params).json()
     info=[]
     for i in press:
@@ -90,8 +102,20 @@ with c1:
     ## Regulations
     '''
     ## Range selector
-    d3 = st.date_input("Filter regulations by date:", [])
-    regulation = get_regulation()
+    today = date.today()
+    initial_value_for_start_date = today - relativedelta(months=-12)
+    initial_value_for_end_date = today
+    start_date, end_date = st.date_input("Pick a date range", [])
+    #start_date, end_date = st.date_input("Pick a date range", [])
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+    regulation = get_regulation2()
+ 
+    
+    st.dataframe(regulation[(regulation["date"] > start_date)& (regulation["date"] < end_date)].style.highlight_max(axis=0))
+    #d3 = st.date_input("Filter regulations by date:", [])
+    
+
     
 #Deadlines Box
 with c2:
