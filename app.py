@@ -20,19 +20,22 @@ from datetime import date
 
 
 st.set_page_config(layout="wide",initial_sidebar_state="expanded")
-st.markdown('<style>h1{color: red;}</style>', unsafe_allow_html=True)
-'''
-    # LexAI
-    ## Navigating public fora
-    '''
+st.markdown('<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>', unsafe_allow_html=True)
 
 
-c7, c8, c9 = st.beta_columns((1, 1,2))
-c1, c2, c5 = st.beta_columns((1, 1,2))
-c3, c4, c6 = st.beta_columns((1, 1, 2))
+
+c7, c8, c9 = st.beta_columns((2,1,1))
+c1, c2, c5 = st.beta_columns((1,1,2))
+c3, c4, c5= st.beta_columns((1,1,2))
 
 with c7:
+    #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
+    st.image('Images/LexAI2.png', width=200)
+    '''
+    ## Navigating public fora
+    '''
     query = st.text_input("Search for a topic", 'Technology')
+    st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
 
 
 params=dict(q=query)
@@ -175,4 +178,39 @@ with c2:
                 st.write('Link: ',i["link"])
 
 
-## Displaying tweets (WE NEED TO SORT THE TWEETS BY LASTEST PUBLISHED)
+#MAP
+
+import streamlit as st
+import numpy as np
+import pandas as pd
+import pydeck as pdk
+import math
+
+
+#map_tweets = pd.read_csv('region_count.csv')
+
+map_tweets_loc = pd.read_csv('raw_data/map_tweets.csv')
+
+
+###pydeck with our data ###
+with c5:
+    '''
+    ## Twitter User locations'''
+    
+    st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+        latitude=52.520,
+        longitude=-13.404,
+        zoom=5,
+        pitch=50,
+    ),
+    layers = [pdk.Layer(
+            'ScatterplotLayer',
+            data=map_tweets_loc,
+            get_position='[lon, lat]',
+            get_color='[200, 30, 0, 160]',
+            get_radius= 'radius',
+        ),
+        ],
+    ))
