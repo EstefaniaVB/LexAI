@@ -66,12 +66,13 @@ def get_consultations():
         title = i['title']
         topics = i['topics']
         type_of_act = i['type_of_act']
+        status =  i["status"]
         try:
             end_date = pd.to_datetime(i['end_date']).date()
         except:
             end_date = pd.to_datetime(i['end_date'])
         link = i['link']
-        consultations.append({"title":title,"topics":topics,"type_of_act":type_of_act,"end_date":end_date,"link":link})
+        consultations.append({"title":title,"status":status,"topics":topics,"type_of_act":type_of_act,"end_date":end_date,"link":link})
 
     return consultations
 
@@ -158,24 +159,69 @@ with c2:
     '''
     ## Range selector
     
-    today = date.today()
-    initial_value_for_start_date = today + relativedelta(months=-12)
-    initial_value_for_end_date = today
-    start_date, end_date = st.date_input("Filter consultations by date: ", [initial_value_for_start_date,initial_value_for_end_date])
-    start_date = pd.to_datetime(start_date).date()
-    end_date = pd.to_datetime(end_date).date()
+    #today = date.today()
+    #initial_value_for_start_date = today + relativedelta(months=-12)
+    #initial_value_for_end_date = today
+    #start_date, end_date = st.date_input("Filter consultations by date: ", [initial_value_for_start_date,initial_value_for_end_date])
+    #start_date = pd.to_datetime(start_date).date()
+    #end_date = pd.to_datetime(end_date).date()
     consultation = get_consultations()
+    expander1=st.beta_expander("expand")
     expander2=st.beta_expander("expand")
-    #checkbox_val = st.checkbox("Open")
-    #checkbox_val = st.checkbox("Closed")
+    
+    with expander1:  
+        checkbox_val_1 = st.checkbox("Open")
+        checkbox_val_2 = st.checkbox("Closed")
+        checkbox_val_3 = st.checkbox("Upcoming")
+        checkbox_val_4 = st.checkbox("Disabled")
+        checkbox_val_5 = st.checkbox("Other")
+        
+    
     with expander2:    
         for i in consultation:
-            if i["end_date"] and (i["end_date"] >= start_date and i["end_date"] <= end_date):
-                st.write('Title: ',i["title"])
-                st.write('Title: ',i["topics"])
-                st.write('Type of act: ',i["type_of_act"])
-                st.write('End date: ',i["end_date"])
-                st.write('Link: ',i["link"])
+            #if i["end_date"] and (i["end_date"] >= start_date and i["end_date"] <= end_date):
+            if checkbox_val_1:
+                if i["status"]=="OPEN":
+                    st.write('Title: ',i["title"])
+                    st.write('Status: ',i["status"])                
+                    st.write('Topic: ',i["topics"])
+                    st.write('Type of act: ',i["type_of_act"])
+                    st.write('End date: ',i["end_date"])
+                    st.write('Link: ',i["link"])
+            if checkbox_val_2:
+                if i["status"]=="CLOSED":
+                    st.write('Title: ',i["title"])
+                    st.write('Status: ',i["status"])                
+                    st.write('Topic: ',i["topics"])
+                    st.write('Type of act: ',i["type_of_act"])
+                    st.write('End date: ',i["end_date"])
+                    st.write('Link: ',i["link"])
+            if checkbox_val_3:
+                if i["status"]=="UPCOMING":
+                    st.write('Title: ',i["title"])
+                    st.write('Status: ',i["status"])                
+                    st.write('Topic: ',i["topics"])
+                    st.write('Type of act: ',i["type_of_act"])
+                    st.write('End date: ',i["end_date"])
+                    st.write('Link: ',i["link"])
+            if checkbox_val_4:
+                if i["status"]=="DISABLE":
+                    st.write('Title: ',i["title"])
+                    st.write('Status: ',i["status"])                
+                    st.write('Topic: ',i["topics"])
+                    st.write('Type of act: ',i["type_of_act"])
+                    st.write('End date: ',i["end_date"])
+                    st.write('Link: ',i["link"])
+            if checkbox_val_5:
+                if i["status"]=="OTHER":
+                    st.write('Title: ',i["title"])
+                    st.write('Status: ',i["status"])                
+                    st.write('Topic: ',i["topics"])
+                    st.write('Type of act: ',i["type_of_act"])
+                    st.write('End date: ',i["end_date"])
+                    st.write('Link: ',i["link"])
+            else:
+                print("Click something")
 
 
 #MAP
@@ -209,7 +255,7 @@ with c5:
             'ScatterplotLayer',
             data=map_tweets_loc,
             get_position='[lon, lat]',
-            get_color='[200, 30, 0, 160]',
+            get_fill_color='[180, 0, 200, 140]',
             get_radius= 'radius',
         ),
         ],
