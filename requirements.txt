@@ -45,4 +45,3 @@ markdown
 matplotlib
 plotly
 datetime
-dateutil
