@@ -130,7 +130,7 @@ class TwitterSearch:
             print(lang, end=', ')
             query_trans = self.gtrans(query, dest=lang)
 
-            params = {'q': query_trans, 
+            params = {'q': query_trans,
                       'result_type': result_type, 
                       'count': count,
                       'tweet_mode': 'extended'}
