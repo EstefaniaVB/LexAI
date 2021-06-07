@@ -37,3 +37,14 @@ python-dotenv
 meilisearch
 python-dotenv
 streamlit
+
+
+#stramlit app
+io
+typing 
+markdown
+matplotlib
+plotly
+datetime
+dateutil.relativedelta
+IPython.core.display
