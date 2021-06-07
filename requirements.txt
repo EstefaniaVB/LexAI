@@ -21,6 +21,10 @@ gcsfs
 google-cloud-storage
 mlflow
 s3fs
+bs4
+twython==3.8.2
+requests==2.25.1
+
 
 # utilities
 six>=1.14
@@ -32,5 +36,4 @@ python-dotenv
 # search/database
 meilisearch
 python-dotenv
-
 streamlit

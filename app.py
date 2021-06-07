@@ -27,68 +27,77 @@ st.set_page_config(layout="wide",initial_sidebar_state="expanded")
 
 query = st.text_input("Search for a topic", 'Technology')
 c1, c2, c3 = st.beta_columns((1, 1, 2))
+c4, c5, c6 = st.beta_columns((1, 1, 2))
 
-lexai_eurlex_url = "http://127.0.0.1:8000/query"
-tweet_params=dict(query=query,n=5)
-eurlex = requests.get(lexai_eurlex_url,params=tweet_params).json()
+
+
+params=dict(q=query)
+headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+
+
+
 
 def get_regulation():
+    lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
     reg = []
-    for i in eurlex:
+    for i in result:
         #It would be nice to have a list and small text
-        reg.append(st.write(eurlex[i]['title']))
-        reg.append(st.write(eurlex[i]['author']))
-        reg.append(st.write(pd.to_datetime(eurlex[i]['date']).date()))
-        reg.append(st.write(eurlex[i]['link']))
+        reg.append(st.write(result[i]['title']))
+        reg.append(st.write(result[i]['author']))
+        reg.append(st.write(pd.to_datetime(result[i]['date']).date()))
+        reg.append(st.write(result[i]['link']))
     return reg
 
 def get_regulation2():
+    lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
     reg = []
-    for i in eurlex:
-        #It would be nice to have a list and small text
-        title=eurlex[i]['title']
-        author= eurlex[i]['author']
-        date= pd.to_datetime(eurlex[i]['date']).date()
-        link = eurlex[i]['link']
+    for i in result["hits"]:
+        title=i["title"]
+        author= i['author']
+        date= pd.to_datetime(i['date']).date()
+        
+        link = i['link']
         reg.append({"title":title,"author":author,"date":date,"link":link})
-    return  pd.DataFrame(reg)
+    
+    return reg
 
 
 def get_consultations():
-    lexai_eurlex_url = "http://127.0.0.1:8000/query"
-    consults_params=dict(query=query,index='consultations',n=100)
-    consults = requests.get(lexai_eurlex_url,params=consults_params).json()
+    lexai_url = "http://35.223.18.2/indexes/consultations/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
     consultations = []
-    for i in consults:
-        consultations.append(st.write('Title: ',consults[i]['title']))
-        consultations.append(st.write('Type of act: ',consults[i]['type_of_act']))
+    for i in result:
+        consultations.append(st.write('Title: ',result[i]['title']))
+        consultations.append(st.write('Type of act: ',result[i]['type_of_act']))
         #consultations.append(st.write('Start date: ',consults[i]['start_date']))
-        consultations.append(st.write('End date: ',consults[i]['end_date']))
-        consultations.append(st.write('Link: ',consults[i]['link']))
+        consultations.append(st.write('End date: ',result[i]['end_date']))
+        consultations.append(st.write('Link: ',result[i]['link']))
     return consultations
 
 def get_news():
-    consult_params=dict(query=query,index='twitter_press',n=50)
-    press = requests.get(lexai_eurlex_url,params=consult_params).json()
+    lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
     html_code =[]
-    for i in press:
-        link = press[i]["link"]
-        text= press[i]["text"]
-        user= press[i]["user"]
-        date= press[i]["date"]
+    for i in result:
+        link = result[i]["link"]
+        text= result[i]["text"]
+        user= result[i]["user"]
+        date= result[i]["date"]
         html_link = f'<blockquote class="twitter-tweet"><p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
         html_code.append(html_link)
     return html_code
 
 def get_news2():
-    consult_params=dict(query=query,index='twitter_press',n=100)
-    press = requests.get(lexai_eurlex_url,params=consult_params).json()
+    lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
     info=[]
-    for i in press:
-        link = press[i]["link"]
-        text= press[i]["text"]
-        user= press[i]["user"]
-        date= press[i]["date"]
+    for i in result:
+        link = result[i]["link"]
+        text= result[i]["text"]
+        user= result[i]["user"]
+        date= result[i]["date"]
         #html_link = f'<blockquote class="twitter-tweet"><p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
         html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="1%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
         info.append({"link":link,"text":text,"user":user,"date":date,"html_link":html_link})
@@ -110,9 +119,13 @@ with c1:
     start_date = pd.to_datetime(start_date)
     end_date = pd.to_datetime(end_date)
     regulation = get_regulation2()
+    
  
     
-    st.dataframe(regulation[(regulation["date"] > start_date)& (regulation["date"] < end_date)].style.highlight_max(axis=0))
+    st.write(regulation[(regulation[0]["date"] > start_date)& (regulation[0]["date"] < end_date)]["title"])
+    st.write(regulation[(regulation[0]["date"] > start_date)& (regulation[0]["date"] < end_date)]["author"])
+    st.write(regulation[(regulation[0]["date"] > start_date)& (regulation[0]["date"] < end_date)]["date"])
+    st.write(regulation[(regulation[0]["date"] > start_date)& (regulation[0]["date"] < end_date)]["link"])
     #d3 = st.date_input("Filter regulations by date:", [])
     
 
@@ -144,18 +157,4 @@ with c3:
         list_of_tweets = []
         for e in range(len(html_tweet)):
             list_of_tweets.append(components.html(html_tweet[e],scrolling=True,width=500,height=200))
-    
-
-
-# API QUERIES
-#indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians'])
-
-
-## TWITTER
-lexai_twitter_url = "http://127.0.0.1:8000/"
-tweet_params=dict(keyword=query)
-tweet_likes = requests.get(lexai_twitter_url,params=tweet_params).json()
-
-
-#st.write('Tweets about this topic were liked by',tweet_likes[0], 'people on Twitter')
 
