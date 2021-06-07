@@ -1,0 +1,3 @@
+synonyms
++ lematised words as synonyms
+add sentiment analysis results to every tweet already in database (update current entries)
