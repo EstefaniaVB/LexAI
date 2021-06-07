@@ -45,5 +45,4 @@ markdown
 matplotlib
 plotly
 datetime
-dateutil.relativedelta
-IPython.core.display
+dateutil
