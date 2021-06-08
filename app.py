@@ -1,35 +1,22 @@
-import streamlit as st
-import io
 from typing import List, Optional
+from altair.vegalite.v4.schema.core import Month
 import streamlit.components.v1 as components
 import requests
-import markdown
-import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
-from plotly import express as px
 from plotly.subplots import make_subplots
 import streamlit as st
 import datetime
-import pandas as pd
 from dateutil.relativedelta import relativedelta # to add days or years
-from IPython.core.display import display, HTML
 from datetime import date
 import streamlit as st
-import numpy as np
 import pandas as pd
 import pydeck as pdk
-import math
-import streamlit as st
-import numpy as np
-import pandas as pd
-import pydeck as pdk
-import math
-from geopy import geocoders
 from geopy.geocoders import Nominatim
 import requests
+import altair as alt
+from wordcloud import WordCloud, STOPWORDS
+import math
 
 #Dashboard Layout
 st.set_page_config(layout="wide",initial_sidebar_state="expanded")
@@ -39,9 +26,11 @@ st.markdown('<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;
 
 
 
-c7, c8, c9 = st.beta_columns((2,1,1))
-c1, c2 = st.beta_columns((2,2))
-c3, c4, c5, c6= st.beta_columns((1,1,1,1))
+#c7, c8, c9 = st.beta_columns((2,1,1))
+c7,  c2  = st.beta_columns((2,2)) #search bar and hist
+c1,c8,c9 = st.beta_columns((2,1,1)) #Cloud of words
+c3, c4, c5, c6= st.beta_columns((1,1,1,1)) #Regulatory and news
+c10 = st.beta_columns((1)) #Sentiment
 
 with c7:
     #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
@@ -145,6 +134,8 @@ def get_politicians():
         html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
         info.append({"link":link,"text":text,"user":user,"date":date,"html_link":html_link})
     return pd.DataFrame(info).sort_values(by="date", ascending=False).reset_index()
+
+
 
 #Industry news
 with c3:
@@ -266,23 +257,103 @@ with c6:
             else:
                 print("Click something")
 
+# Sentiment pie-charts
+fig, ax1= plt.subplots(figsize=(10, 5))
+plt.figure(figsize=(10,5))
+def label_function(val):
+    return f'{val:.0f}%'
+
+with c8:
+    '''
+    ## Twitter sentiment
+    '''
+    
+    fig, ax1= plt.subplots(figsize=(10, 5))
+    plt.figure(figsize=(10,5))
+    data_df=pd.DataFrame(full_data_general['hits'])
+    data_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
+                                            autopct=label_function, ax=ax1)
+    #    ax1.set_ylabel('All tweets', size=22)
+    st.write(fig)
+
+with c9:    
+    '''
+    ## On Topic sentiment
+    '''
+    
+    fig, ax2= plt.subplots(figsize=(10, 5))
+    plt.figure(figsize=(10,5))
+    topic_df=pd.DataFrame(query_data_general['hits'])
+    
+    topic_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
+                                        autopct=label_function, ax=ax2)
+#    ax2.set_ylabel('On topic', size=22)
+    st.write(fig)
+    
+with c2:
+    '''
+    ## Trending topics
+    '''
+    general_df = pd.DataFrame(query_data_general["hits"]) 
+    news_df = pd.DataFrame(news["hits"]) 
+    politicians_df = pd.DataFrame(politicians["hits"]) 
+    
+    hashtags=[]
+    for i in general_df['hashtags']:
+        if i !='':
+            for j in i.lower().split(', '):
+                hashtags.append(j)
+    for i in news_df['hashtags']:
+        if i !='':
+            for j in i.lower().split(', '):
+                hashtags.append(j)
+    for i in politicians_df['hashtags']:
+        if i !='':
+            for j in i.lower().split(', '):
+                hashtags.append(j)
+                    
+    text=' '.join(item for item in hashtags)
+
+
+    # Define a function to plot word cloud
+    def plot_cloud(wordcloud):
+        # Set figure size
+        plt.figure(figsize=(8, 16))
+        # Display image
+        plt.imshow(wordcloud) 
+        # No axis details
+        plt.axis("off");
+    # Import package
+    
+    STOPWORDS.add(query)
+    # Generate word cloud
+    wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
+    # Plot
+    
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    st.pyplot()
+    #plot = plot_cloud(wordcloud)
+    #st.write(plot)
 
 #MAP
 
-####### api retrieve #######
+###pydeck with our data ###
 data_df=pd.DataFrame(query_data_general['hits'])
 data_df = data_df.sort_values(by=['timestamp'])
 data_dict = data_df.to_dict('records')   #creates dictionary for further use
 
 
 
-###pydeck with our data ###
+
 with c1:
     '''
     ## Twitter user locations
     '''
     
-    df_europe = pd.read_csv('raw_data/list_cities3.csv', delimiter= ';')
+    df_europe = pd.read_csv('list_cities3.csv', delimiter= ';')
     list_cities = list(df_europe['city'])
     list_countries = list(df_europe['country'])
    
@@ -410,83 +481,22 @@ with c1:
         ],
     ))
     
-# Sentiment pie-charts
-fig, ax1= plt.subplots(figsize=(10, 5))
-plt.figure(figsize=(10,5))
-def label_function(val):
-    return f'{val:.0f}%'
+with  c10:
 
-with c8:
-    '''
-    ## Twitter sentiment
-    '''
-    
-    fig, ax1= plt.subplots(figsize=(10, 5))
-    plt.figure(figsize=(10,5))
-    data_df=pd.DataFrame(full_data_general['hits'])
-    data_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
-                                            autopct=label_function, ax=ax1)
-    #    ax1.set_ylabel('All tweets', size=22)
-    st.write(fig)
+    lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+    result = requests.get(lexai_url,params=params,headers=headers).json()
+    data_eurlex_df = pd.DataFrame(result["hits"])
+    import altair as alt
+    import numpy as np
+    import pandas as pd
 
-with c9:    
-    '''
-    ## On Topic sentiment
-    '''
-    
-    fig, ax2= plt.subplots(figsize=(10, 5))
-    plt.figure(figsize=(10,5))
-    topic_df=pd.DataFrame(query_data_general['hits'])
-    
-    topic_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
-                                        autopct=label_function, ax=ax2)
-#    ax2.set_ylabel('On topic', size=22)
-    st.write(fig)
-    
-with c2:
-    '''
-    ## Trending topics
-    '''
-    general_df = pd.DataFrame(query_data_general["hits"]) 
-    news_df = pd.DataFrame(news["hits"]) 
-    politicians_df = pd.DataFrame(politicians["hits"]) 
-    
-    hashtags=[]
-    for i in general_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in news_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in politicians_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-                    
-    text=' '.join(item for item in hashtags)
+    data_eurlex_df['year/month']=data_eurlex_df['date'].str[0:7]
+
+    source=data_eurlex_df
+    chart = alt.Chart(source).mark_bar().encode(
+        alt.X('year/month',title='Year / Month'),
+        alt.Y('count(year/month)',title='Number of laws')
+    ).properties(width=600).configure_axis(grid=False)
 
 
-    # Define a function to plot word cloud
-    def plot_cloud(wordcloud):
-        # Set figure size
-        plt.figure(figsize=(8, 16))
-        # Display image
-        plt.imshow(wordcloud) 
-        # No axis details
-        plt.axis("off");
-    # Import package
-    from wordcloud import WordCloud, STOPWORDS
-    STOPWORDS.add(query)
-    # Generate word cloud
-    wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
-    # Plot
-    
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    st.pyplot()
-    #plot = plot_cloud(wordcloud)
-    #st.write(plot)
+    st.write(chart)

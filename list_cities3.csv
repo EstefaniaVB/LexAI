@@ -1,0 +1,520 @@
+city;country
+MOSKVA ;Russia
+LONDON;UK
+St Petersburg;Russia
+BERLIN;Germany
+MADRID;Spain
+ROMA;Italy
+KIEV;Ukraine
+PARIS;France
+BUCURESTI ;Romania
+BUDAPEST;Hungary
+Hamburg;Germany
+MINSK;Belarus
+WARSZAWA ;Poland
+BEOGRAD (Belgrade);Serbia
+WIEN ;Austria
+Kharkov;Ukraine
+Barcelona;Spain
+Novosibirsk;Russia
+Nizhny Novgorod;Russia
+Milano (Milan);Italy
+Ekaterinoburg;Russia
+München ;Germany
+PRAHA ;Czech Republic
+Samara;Russia
+Omsk;Russia
+SOFIA;Bulgaria
+Dnepropetrovsk;Ukraine
+Kazan;Russia
+Ufa;Russia
+Chelyabinsk;Russia
+Donetsk ;Ukraine
+Napoli ;Italy
+Birmingham;UK
+Perm;Russia
+Rostov-na-Donu;Russia
+Odessa;Ukraine
+Volgograd;Russia
+Köln ;Germany
+Torino ;Italy
+Voronezh;Russia
+Krasnoyarsk;Russia
+Saratov;Russia
+ZAGREB;Croatia
+Zaporozhye;Ukraine
+Lódz;Poland
+Marseille;France
+RIGA;Latvia
+Lvov;Ukraine
+ATHINAI ;Greece
+Salonika;Greece
+STOCKHOLM;Sweden
+Kraków;Poland
+Valencia;Spain
+AMSTERDAM;Netherlands
+Leeds;UK
+Tolyatti;Russia
+Kryvy Rig;Ukraine
+Sevilla;Spain
+Palermo;Italy
+Ulyanovsk;Russia
+KISHINEV;Moldova
+Genova;Italy
+Izhevsk;Russia
+Frankfurt am Main;Germany
+Krasnodar;Russia
+Wroclaw ;Poland
+Glasgow;UK
+Yaroslave;Russia
+Khabarovsk;Russia
+Vladivostok;Russia
+Zaragoza;Spain
+Essen;Germany
+Rotterdam;Netherlands
+Irkutsk;Russia
+Dortmund;Germany
+Stuttgart;Germany
+Barnaul;Russia
+VILNIUS;Lithuania
+Poznan;Poland
+Düsseldorf;Germany
+Novokuznetsk;Russia
+LISBOA ;Portugal
+HELSINKI;Finland
+Málaga;Spain
+Bremen;Germany
+Sheffield;UK
+SARAJEVO;Bosnia
+Penza;Russia
+Ryazan;Russia
+Orenburg;Russia
+Naberezhnye Tchelny;Russia
+Duisburg;Germany
+Lipetsk;Russia
+Hannover;Germany
+Mykolaiv ;Ukraine
+Tula;Russia
+OSLO;Norway
+Tyumen;Russia
+KOBENHAVN ;Denmark
+Kemerovo;Russia
+Mariupol;Ukraine
+Leipzig;Germany
+Nürnberg ;Germany
+Bradford;UK
+Astrakhan;Russia
+DUBLIN;Ireland
+Tomsk;Russia
+Dresden;Germany
+Gomel;Belarus
+Liverpool;UK
+Antwerpen ;Belgium
+Lugansk;Ukraine
+Kirov ;Russia
+Göteborg ;Sweden
+Cheboksary;Russia
+Ivanovo;Russia
+Gdansk ;Poland
+Bryansk;Russia
+Tver;Russia
+Edinburgh;UK
+BRATISLAVA;Slovak Republic
+s-Gravenhage;Netherlands
+Kursk;Russia
+Manchester;UK
+SKOPLJE;Macedonia
+Magnitogorsk;Russia
+Kaliningrad ;Russia
+TALLINN;Estonia
+Szczecin;Poland
+Lyon;France
+Kaunas;Lithuania
+Bristol;UK
+Nizhny Tagil;Russia
+Bochum;Germany
+Kirklees;UK
+Makeyevka;Ukraine
+Bydgoszcz;Poland
+Bologna;Italy
+Brno;Czech Republic
+Vinnutsya;Ukraine
+Firenze;Italy
+Murmansk;Russia
+Ulan-Ude;Russia
+Wuppertal;Germany
+Arkhangelsk;Russia
+Kurgan;Russia
+Toulouse;France
+Lublin;Poland
+Mogilev;Belarus
+Kherson;Ukraine
+Las Palmas ;Spain
+Smolensk;Russia
+Bilbao;Spain
+Sevastopol;Ukraine
+Murcia;Spain
+Fife;UK
+Iasi;Romania
+Katowice;Poland
+Nice;France
+Stavropol;Russia
+Constanta;Romania
+Orel;Russia
+Catania;Italy
+Vitebsk;Belarus
+Kaluga;Russia
+Belgorod;Russia
+Zürich;Switzerland
+Simferopol;Ukraine
+Bari;Italy
+Vladimir;Russia
+Sochi;Russia
+Cluj-Napoca;Romania
+Makhachkala;Russia
+Galati;Romania
+Wirral;UK
+North Lanarkshire;UK
+Timisoara;Romania
+Cherepovets;Russia
+Ostrava;Czech Republic
+Bielefeld;Germany
+Wakefield;UK
+Valladolid;Spain
+Saransk;Russia
+Cardiff;UK
+Brasov;Romania
+Craiova;Romania
+Poltava;Ukraine
+Tambov;Russia
+Dudley;UK
+Wigan;UK
+Chita;Russia
+Vladikavkaz;Russia
+East Riding of Yorkshire;UK
+Cherkassy;Ukraine
+Mannheim;Germany
+Córdoba;Spain
+South Lanarkshire;UK
+Chernigov;Ukraine
+Coventry;UK
+Gorlovka;Ukraine
+Palma de Mallorca;Spain
+Grodno;Belarus
+Bonn;Germany
+Vologda;Russia
+Varna;Bulgaria
+Venezia;Italy
+Zhitomir;Ukraine
+Belfast;UK
+Sumy;Ukraine
+Leicester;UK
+Komsomolsk-na-Amure;Russia
+Sunderland;UK
+Sandwell;UK
+Doncaster;UK
+Stockport;UK
+Sefton;UK
+Kostroma;Russia
+Vigo;Spain
+Århus;Denmark
+Brest;Belarus
+Volzhsky;Russia
+Taganrog;Russia
+Bialystok;Poland
+Nottingham;UK
+Petrozavodsk;Russia
+Newcastle-upon-Tyne;UK
+Gelsenkirchen;Germany
+Bratsk;Russia
+Dzerzhinsk ;Russia
+Surgut;Russia
+Karlsruhe;Germany
+Orsk;Russia
+Porto;Portugal
+Alicante;Spain
+Dneprodzerzhinsk;Ukraine
+Wiesbaden;Germany
+Kirovograd;Ukraine
+Kingston-upon-Hull;UK
+Novi Sad;Serbia
+Bolton;UK
+Angarsk;Russia
+Sterlitamak;Russia
+Münster ;Germany
+Gijón;Spain
+LJUBLJANA;Slovenia
+Mönchengladbach;Germany
+Chemnitz;Germany
+Messina;Italy
+Walsall;UK
+Chernovtsy;Ukraine
+Khmelnitsky ;Ukraine
+Malmö;Sweden
+Czestochowa;Poland
+Plymouth;UK
+Hospitalet de Llobregat;Spain
+Rotherham;UK
+Augsburg;Germany
+Stoke-on-Trent;UK
+Halle;Germany
+Verona;Italy
+Gdynia;Poland
+Strasbourg;France
+Ploiesti;Romania
+Nis;Serbia
+Ioshkap-Ola;Russia
+Braunschweig;Germany
+Nantes;France
+Wolverhampton;UK
+Rovno;Ukraine
+TIRANA;Albania
+Aachen;Germany
+Sosnowiec;Poland
+Granada;Spain
+Kosice;Slovakia
+Krefeld;Germany
+Rybinsk;Russia
+La Coruña;Spain
+Rhondda with Cynon & Taff;UK
+Krementchug;Ukraine
+Nizhenvartovsk;Russia
+Graz;Austria
+Prokopyevsk;Russia
+Severodvinsk;Russia
+South Gloucestershire;UK
+Magdeburg;Germany
+Ivano-Frankovsk;Ukraine
+Kiel;Germany
+Braila;Romania
+Derby;UK
+Utrecht;Netherlands
+Ternopol;Ukraine
+Radom;Poland
+Gent ;Belgium
+Swansea;UK
+Naltchik;Russia
+Syktivkar;Russia
+Velikiy Novgorod;Russia
+Salford;UK
+Bergen;Norway
+Aberdeenshire;UK
+Barnsley;UK
+Biisk;Russia
+Nizhnekamsk;Russia
+Trieste;Italy
+Oberhausen;Germany
+Oradea;Romania
+Shakhty;Russia
+Tameside;UK
+Bobruisk;Belarus
+Oldham;UK
+Blagoveshchensk ;Russia
+Trafford;UK
+Aberdeen;UK
+Lutsk;Ukraine
+Vitoria-Gasteiz;Spain
+Southampton;UK
+Lübeck;Germany
+Padova;Italy
+Belaya Tserkov ;Ukraine
+Taranto;Italy
+Starsy Oskol;Russia
+Kielce;Poland
+Gliwice;Poland
+Badalona;Spain
+Bordeaux;France
+Bacau;Romania
+Highland;UK
+Montpellier;France
+Balakovo;Russia
+Rochdale;UK
+Zelenograd;Russia
+Espoo;Finland
+Charleroi;Belgium
+Torun;Poland
+Hagen;Germany
+Bytom;Poland
+Novorossiysk;Russia
+Debrecen;Hungary
+Solihull;UK
+Rostock;Germany
+Linz;Austria
+Santa Cruz de Tenerife;Spain
+Klaipeda;Lithuania
+Freiburg im Breisgau;Germany
+Pskov;Russia
+Erfurt;Germany
+Gateshead;UK
+Eindhoven;Netherlands
+Split;Croatia
+Zabrze;Poland
+Saint-Étienne;France
+Oviedo;Spain
+Petropavlovsk-Kamchatsky;Russia
+Zlatoust;Russia
+Rennes;France
+Milton Keynes;UK
+Yakutsk;Russia
+Kassel;Germany
+Móstoles;Spain
+Banja Luka;Bosnia
+Le Havre;France
+Liège (Luik);Belgium
+Bourgas;Bulgaria
+Podolsk;Russia
+North Tyneside;UK
+Calderdale;UK
+Northampton;UK
+Tampere;Finland
+Tilburg;Netherlands
+Elche;Spain
+Portsmouth;UK
+Kamensk-Uralsky;Russia
+Brescia;Italy
+Engels;Russia
+Warrington;UK
+Uppsala;Sweden
+Kramatorsk;Ukraine
+Pitesti;Romania
+Syzran;Russia
+Sabadell;Spain
+North Somerset;UK
+Arad;Romania
+Novocherkassk;Russia
+Saarbrücken;Germany
+Odense;Denmark
+Mainz;Germany
+Berezniki;Russia
+Santander;Spain
+Piraiévs;Greece
+Jérez de la Frontera;Spain
+Bury;UK
+Hamm;Germany
+Luton;UK
+Kragujevac;Serbia
+Reims;France
+Bielsko-Biala;Poland
+Reggio di Calabria;Italy
+Volgodonsk;Russia
+St Helens;UK
+Stockton-on-Tees;UK
+Renfrewshire;UK
+San Sebastián;Spain
+Uzno-Sakhalinsk;Russia
+Herne;Germany
+Vantaa;Finland
+York;UK
+Modena;Italy
+Thamesdown;UK
+Leganés;Spain
+Mülheim/Ruhr;Germany
+Cagliari;Italy
+Miskolc;Hungary
+Genève;Switzerland
+Southend-on-Sea;UK
+Groningen;Netherlands
+Lille;France
+Turku;Finland
+Olsztyn;Poland
+Almería;Spain
+Cartagena;Spain
+Melitopol;Ukraine
+Bâle;Switzerland
+Sibiu;Romania
+New Forest;UK
+Caerphilly;UK
+Carmarthenshire;UK
+Prato;Italy
+Plzen;Czech Republic
+Abakan;Russia
+Rijeka;Croatia
+Toulon;France
+Parma;Italy
+Baranovichi;Belarus
+Kertch;Ukraine
+Roussé;Bulgaria
+Maikop;Russia
+Miass;Russia
+Solingen;Germany
+Tirgu-Mures;Romania
+Bath & NE Somerset;UK
+Osnabrück;Germany
+Livorno;Italy
+Lyubertsy;Russia
+Wycombe;UK
+Tarrasa;Spain
+Armavir;Russia
+Lüdwigshafen;Germany
+Fuenlabrada;Spain
+Podgorica;Serbia
+Alcalá de Henares;Spain
+Basildon;UK
+Rubtsovsk;Russia
+Pamplona;Spain
+Burgos;Spain
+Leskovac;Serbia
+Rzeszów;Poland
+Ålborg;Denmark
+Kovrov;Russia
+Leverkusen;Germany
+Bournemouth;UK
+Breda;Netherlands
+Peterborough;UK
+Szeged;Hungary
+Nakhodka;Russia
+NE Lincolnshire;UK
+Ruda Slaska;Poland
+Salamanca;Spain
+Pécs;Hungary
+Salavat;Russia
+Ussuriisk;Russia
+Mytishchi;Russia
+Chelmsford;UK
+Foggia;Italy
+Brighton;UK
+South Tyneside;UK
+Charnwood;UK
+Aylesbury Vale;UK
+Colchester;UK
+Oldenburg;Germany
+Knowsley;UK
+Patrai;Greece
+Apeldoorn;Netherlands
+North Lincolnshire;UK
+Huntingdonshire;UK
+Macclesfield;UK
+Blackpool;UK
+Perugia;Italy
+Nijmegen;Netherlands
+Beltsy;Moldova
+Kolomna;Russia
+Grenoble;France
+West Lothian;UK
+Borisov;Belarus
+South Somerset;UK
+Dundee;UK
+Nikopol;Ukraine
+Neuss;Germany
+Baia Mare;Romania
+Enschede;Netherlands
+Norilsk;Russia
+Gand;Belgium
+Moscow;Russia
+Bucharest;Romania
+Warsaw;Poland
+Belgrade;Serbia
+Vienna;Austria
+ Milan;Italy
+Prague;Czech Republic
+Naples;Italy
+Cologne;Germany
+Turin;Italy
+Athens;Greece
+Breslau;Poland
+Lisbon;Portugal
+Copenhagen;Denmark
+Anvers;Belgium
+Gothenburg;Sweden
+Danzig;Poland
+Luik;Belgium
