@@ -179,7 +179,6 @@ with c2:
     
     with expander2:    
         for i in consultation:
-            #if i["end_date"] and (i["end_date"] >= start_date and i["end_date"] <= end_date):
             if checkbox_val_1:
                 if i["status"]=="OPEN":
                     st.write('Title: ',i["title"])
@@ -246,9 +245,9 @@ with c5:
     st.pydeck_chart(pdk.Deck(
     map_style='mapbox://styles/mapbox/light-v9',
     initial_view_state=pdk.ViewState(
-        latitude=52.520,
-        longitude=-13.404,
-        zoom=5,
+        latitude= 46.8182,
+        longitude=8.2275,
+        zoom=3,
         pitch=50,
     ),
     layers = [pdk.Layer(
