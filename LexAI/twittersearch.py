@@ -9,6 +9,7 @@ from unicodedata import normalize
 import pandas as pd
 from dotenv import load_dotenv
 from google.cloud import translate
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from twython import Twython
 
 load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
@@ -29,7 +30,7 @@ class TwitterSearch:
     #- 900 tweets 15 min
     #- 100000 in 24h
 
-    def __init__(self, id_key='PROJECT_G', trans=False):
+    def __init__(self, id_key='PROJECT_T', trans=False):
         # Enter your keys/secrets as strings in the following fields
         self.trans = trans
         
@@ -50,12 +51,12 @@ class TwitterSearch:
         ### New outlets and politicians twitter data
         press = pd.read_csv(join(dirname(__file__), 'data/press.csv'), delimiter=",")
         meps = pd.read_csv(join(dirname(__file__), 'data/meps.csv'), delimiter=",")
+        press = press.dropna(how='any', subset=['twitter'])
+        meps = meps.dropna(how='any', subset=['twitter'])
+
+        return press, meps
         
-        press = list(press['twitter'].dropna())
-        politicians = list(meps["twitter"].dropna())
-        return press, politicians
-        
-    def extract_info(self, result):
+    def extract_info(self, result, df):
         entry = {}
     
         entry['id'] = result['id']
@@ -87,6 +88,23 @@ class TwitterSearch:
         entry['timestamp'] = mktime(dt.timetuple())
         entry['link'] = f"https://twitter.com/{entry['user']}/status/{entry['id']}"
         
+        if all(col in df.columns for col in ['name', 'country', 'eu_group', 'national_group']):
+            entry['name'] = df[df['twitter'] == entry['user']]['name'].iloc[0]
+            entry['country'] = df[df['twitter'] == entry['user']]['country'].iloc[0]
+            entry['eu_group'] = df[df['twitter'] == entry['user']]['eu_group'].iloc[0]
+            entry['national_group'] = df[df['twitter'] == entry['user']]['national_group'].iloc[0]
+        elif 'media' in df.columns:
+            entry['name'] = df[df['twitter'] == entry['user']]['media'].iloc[0]
+        
+        sid = SentimentIntensityAnalyzer()
+        entry['compound_score'] = sid.polarity_scores(entry['text_en'])
+        if entry['compound_score'] <= -0.2:
+            entry['sentiment'] = 'negative'
+        elif entry['compound_score'] > 0.2:
+            entry['sentiment'] = 'positive'
+        else:
+            entry['sentiment'] = 'neutral'
+        
         return entry
 
     def gtrans(self, text, dest='en'):
@@ -100,6 +118,9 @@ class TwitterSearch:
 
         for translation in response.translations:
             output_trans = translation.translated_text
+            
+        if output_trans is None:
+            print(datetime.now().strftime("%H:%M:%S: "), 'ERROR: no translation given')
 
         return output_trans
 
@@ -145,12 +166,14 @@ class TwitterSearch:
 
     def search_username(self, usernames=None, count=10):
         if usernames == None:
-            usernames = list(chain(*self.load_users()))
+            print('ERROR: No usernames defined')
+            return None
         elif usernames == 'press':
-            usernames = self.load_users()[0]
+            df = self.load_users()[0]
         elif usernames == 'politicians':
-            usernames = self.load_users()[1]
+            df = self.load_users()[1]
         elif not isinstance(usernames, list):
+            df = pd.DataFrame()
             usernames = usernames.split(',')
         
         print(f'\nSearching {len(usernames)} users\n')
@@ -179,7 +202,7 @@ class TwitterSearch:
                 continue 
             
             if not len(results) == 0:
-                tweets.extend([self.extract_info(result) for result in results])
+                tweets.extend([self.extract_info(result, df) for result in results])
                 
                 # feature not currently working
                 """

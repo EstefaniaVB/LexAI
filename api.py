@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from LexAI.dbsearch import Search
+from LexAI.database import Search
 
 #from predictions import get_prediction
 #from consultations import get_consultation

@@ -61,25 +61,34 @@ pypi:
 # ----------------------------------
 #      Manage DB
 # ----------------------------------
-add_tweets:
-	@python LexAI/dbsearch.py build_ms_many indices=[twitter_query,twitter_press,twitter_politicians]
-	@python LexAI/dbsearch.py export_json indices=[twitter_query,twitter_press,twitter_politicians]
+add_tweets_pp:
+	@python LexAI/database.py build_ms_many indices=twitter_press,twitter_politicians
+	@python LexAI/database.py export_json indices=twitter_press,twitter_politicians
+
+add_tweet_query:
+	@python LexAI/database.py build_ms_many indices=twitter_query
+	@python LexAI/database.py export_json indices=twitter_query
 
 add_regulations:
-	@python LexAI/dbsearch.py build_ms_many indices=[eurlex,consultations]
-	@python LexAI/dbsearch.py export_json indices=[eurlex,consultations]
+	@python LexAI/database.py build_ms_many indices=eurlex,consultations
+	@python LexAI/database.py export_json indices=eurlex,consultations
+
+add_all:
+	@python LexAI/database.py build_ms_many
 
 export_json:
-	@python LexAI/dbsearch.py export_json
+	@python LexAI/database.py export_json
 
 import_json:
-	@python LexAI/dbsearch.py import_json
+	@python LexAI/database.py import_json
 
 import_json_replace:
-	@python LexAI/dbsearch.py import_json replace=True
+	@python LexAI/database.py import_json replace=True
 
 update_entries:
-	@python LexAI/dbsearch.py update_from_json
+	@python LexAI/database.py import_updates
+	@python LexAI/database.py import_data index=twitter_politicians
+	@python LexAI/database.py import_data index=twitter_press
 
 # ----------------------------------
 #      API
