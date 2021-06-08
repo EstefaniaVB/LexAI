@@ -37,6 +37,7 @@ class Database(TwitterSearch, Analyse):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
+        print(self.client.get_index('eurlex'))
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
