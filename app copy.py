@@ -22,14 +22,6 @@ import numpy as np
 import pandas as pd
 import pydeck as pdk
 import math
-import streamlit as st
-import numpy as np
-import pandas as pd
-import pydeck as pdk
-import math
-from geopy import geocoders
-from geopy.geocoders import Nominatim
-import requests
 
 #Dashboard Layout
 st.set_page_config(layout="wide",initial_sidebar_state="expanded")
@@ -40,8 +32,8 @@ st.markdown('<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;
 
 
 c7, c8, c9 = st.beta_columns((2,1,1))
-c1, c2 = st.beta_columns((2,2))
-c3, c4, c5, c6= st.beta_columns((1,1,1,1))
+c1, c2, c5 = st.beta_columns((1,1,2))
+c3, c4, c5= st.beta_columns((1,1,2))
 
 with c7:
     #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
@@ -53,32 +45,10 @@ with c7:
     st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
 
 
-today = datetime.datetime.now()
-limit_date = today + relativedelta(days=-7)
-today_time = today.timestamp()
-limit_time = limit_date.timestamp()
-
-
-#params
 params=dict(q=query)
-tweet_params=dict(q=query, filters= f"timestamp > {limit_time}", limit=20000)
-tweet_params_without_query = dict(q="", filters= f"timestamp > {limit_time}")
-
+params_full_data=dict(q='',limit=100000)
 headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
 
-
-#Data from News
-lexai_url_news = "http://35.223.18.2/indexes/twitter_press/search"
-news = requests.get(lexai_url_news,params=tweet_params,headers=headers).json()
-
-#Data from Politicians
-lexai_url_politicians = "http://35.223.18.2/indexes/twitter_politicians/search"
-politicians = requests.get(lexai_url_politicians,params=tweet_params,headers=headers).json()
-
-#Data from General
-lexai_url_general = f"http://35.223.18.2/indexes/twitter_query/search/"
-full_data_general = requests.get(lexai_url_general,params=tweet_params_without_query,headers=headers).json()
-query_data_general = requests.get(lexai_url_general,params=tweet_params,headers=headers).json()
 
 
 
@@ -173,7 +143,7 @@ with c4:
 
 #Regulation Box
 
-with c5:
+with c1:
     
     '''
     ## Regulations
@@ -196,7 +166,7 @@ with c5:
                 st.write('Link: ',i["link"])
     
 #Deadlines Box
-with c6:
+with c2:
     
     '''
     ## Consultations
@@ -268,134 +238,20 @@ with c6:
 
 
 #MAP
+#map_tweets = pd.read_csv('region_count.csv')
 
-####### api retrieve #######
-data_df=pd.DataFrame(query_data_general['hits'])
-data_df = data_df.sort_values(by=['timestamp'])
-data_dict = data_df.to_dict('records')   #creates dictionary for further use
-
+map_tweets_loc = pd.read_csv('raw_data/map_tweets.csv')
 
 
 ###pydeck with our data ###
-with c1:
+with c5:
     '''
-    ## Twitter user locations
-    '''
+    ## Twitter User locations'''
     
-    df_europe = pd.read_csv('raw_data/list_cities3.csv', delimiter= ';')
-    list_cities = list(df_europe['city'])
-    list_countries = list(df_europe['country'])
-   
-    ####### sorting by countries #######
-
-    def get_country(city):
-        
-        #translates city-name to country name
-        
-        country = df_europe.loc[df_europe['city'] == city, 'country'].iloc[0]
-        return country
-
-
-    def region_lat(region):
-        geolocator = Nominatim(user_agent='myapplication')
-        try:
-            location = geolocator.geocode(region)
-            latitude = location[1][0]
-            longitude = location[1][1]
-        except:
-            latitude = 'NaN'
-            longitude = 'NaN'
-            
-        return latitude
-
-
-    def region_lon(region):
-        geolocator = Nominatim(user_agent='myapplication')
-        try:
-            location = geolocator.geocode(region)
-            latitude = location[1][0]
-            longitude = location[1][1]
-        except:
-            latitude = 'NaN'
-            longitude = 'NaN'
-            
-        return longitude
-
-
-    def count_countries(tweets):
-            
-        country_counts = {
-        
-        'country': [],
-        'tweets':[],
-        'likes': [],
-        'retweets': [],
-        'sentiment': []
-        }
-        
-        
-        for tweet in tweets:
-            if ',' in tweet['user_loc']:
-                list_loc = tweet['user_loc'].split(',')
-                if list_loc[1] in list_countries:
-                    country_counts['country'].append(list_loc[1])
-                    country_counts['likes'].append(tweet['favorite_count'])
-                    country_counts['tweets'].append(1)
-                    country_counts['retweets'].append(tweet['retweet_count'])
-                    country_counts['sentiment'].append(tweet['compound_score'])
-                    
-                if list_loc[0] in list_cities:
-                    country_counts['country'].append(get_country(list_loc[0])) #translates city to country
-                    country_counts['likes'].append(tweet['favorite_count'])
-                    country_counts['tweets'].append(1)
-                    country_counts['retweets'].append(tweet['retweet_count'])
-                    country_counts['sentiment'].append(tweet['compound_score'])
-
-                
-                
-            elif tweet['user_loc'] in list_cities:
-                country_counts['country'].append(get_country(tweet['user_loc']))
-                country_counts['likes'].append(tweet['favorite_count'])
-                country_counts['tweets'].append(1)
-                country_counts['retweets'].append(tweet['retweet_count'])
-                country_counts['sentiment'].append(tweet['compound_score'])
-                
-            elif tweet['user_loc'] in list_countries:
-                country_counts['country'].append(tweet['user_loc'])
-                country_counts['likes'].append(tweet['favorite_count'])
-                country_counts['tweets'].append(1)
-                country_counts['retweets'].append(tweet['retweet_count'])
-                country_counts['sentiment'].append(tweet['compound_score'])
-                
-        return country_counts
-
-
-
-    country_counts = count_countries(data_dict)
-    df_country_counts = pd.DataFrame(country_counts)
-
-    df_country_counts = df_country_counts.dropna()
-    df_country_counts = df_country_counts.groupby(by="country", as_index=False).sum()
-
-    df_country_counts['lat'] = df_country_counts['country'].apply(region_lat)
-    df_country_counts['lon'] = df_country_counts['country'].apply(region_lon)
-    df_country_counts["radius"] = df_country_counts["retweets"].apply(lambda likes: math.sqrt(likes)*1000 + 10000)
-
-    df_country_counts.to_csv('country_counts.csv')
-
-    ######streamlit part#####
-    
-    #map_tweets = pd.read_csv('region_count.csv')
-
-    map_tweets_loc = pd.read_csv('country_counts.csv')
-
-
-    ###pydeck with our data ###
-
     st.pydeck_chart(pdk.Deck(
     map_style='mapbox://styles/mapbox/light-v9',
     initial_view_state=pdk.ViewState(
-        latitude=46.8182,
+        latitude= 46.8182,
         longitude=8.2275,
         zoom=3,
         pitch=50,
@@ -404,18 +260,18 @@ with c1:
             'ScatterplotLayer',
             data=map_tweets_loc,
             get_position='[lon, lat]',
-            get_color='[200, 30, 0, 160]',
+            get_fill_color='[180, 0, 200, 140]',
             get_radius= 'radius',
         ),
         ],
     ))
     
 # Sentiment pie-charts
-fig, ax1= plt.subplots(figsize=(10, 5))
-plt.figure(figsize=(10,5))
-def label_function(val):
-    return f'{val:.0f}%'
-
+    fig, ax1= plt.subplots(figsize=(10, 5))
+    plt.figure(figsize=(10,5))
+    def label_function(val):
+        return f'{val:.0f}%'
+    
 with c8:
     '''
     ## Twitter sentiment
@@ -423,7 +279,9 @@ with c8:
     
     fig, ax1= plt.subplots(figsize=(10, 5))
     plt.figure(figsize=(10,5))
-    data_df=pd.DataFrame(full_data_general['hits'])
+    lexai_url = f"http://35.223.18.2/indexes/twitter_query/search/"
+    data = requests.get(lexai_url,params=params_full_data,headers=headers).json()
+    data_df=pd.DataFrame(data['hits'])
     data_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
                                             autopct=label_function, ax=ax1)
     #    ax1.set_ylabel('All tweets', size=22)
@@ -436,57 +294,11 @@ with c9:
     
     fig, ax2= plt.subplots(figsize=(10, 5))
     plt.figure(figsize=(10,5))
-    topic_df=pd.DataFrame(query_data_general['hits'])
+    lexai_url = f"http://35.223.18.2/indexes/twitter_query/search/"
+    data = requests.get(lexai_url,params=params,headers=headers).json()
+    topic_df=pd.DataFrame(data['hits'])
     
     topic_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
                                         autopct=label_function, ax=ax2)
 #    ax2.set_ylabel('On topic', size=22)
     st.write(fig)
-    
-with c2:
-    '''
-    ## Trending topics
-    '''
-    general_df = pd.DataFrame(query_data_general["hits"]) 
-    news_df = pd.DataFrame(news["hits"]) 
-    politicians_df = pd.DataFrame(politicians["hits"]) 
-    
-    hashtags=[]
-    for i in general_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in news_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in politicians_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-                    
-    text=' '.join(item for item in hashtags)
-
-
-    # Define a function to plot word cloud
-    def plot_cloud(wordcloud):
-        # Set figure size
-        plt.figure(figsize=(8, 16))
-        # Display image
-        plt.imshow(wordcloud) 
-        # No axis details
-        plt.axis("off");
-    # Import package
-    from wordcloud import WordCloud, STOPWORDS
-    STOPWORDS.add(query)
-    # Generate word cloud
-    wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
-    # Plot
-    
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    st.pyplot()
-    #plot = plot_cloud(wordcloud)
-    #st.write(plot)
