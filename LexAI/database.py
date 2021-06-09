@@ -37,14 +37,14 @@ class Database(TwitterSearch, Analyse):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
-        print(self.client.get_index('eurlex'))
+        '''
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
             if index not in ms_indices:
                 self.client.create_index(index, {'primaryKey': 'id'})
                 print(f'Created index: {index}')
-
+        '''
         self.client.index('eurlex').update_settings({
             'searchableAttributes': ['title', 'author', 'date', 'timestamp'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
