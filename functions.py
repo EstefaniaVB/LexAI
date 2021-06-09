@@ -5,9 +5,6 @@ import math
 import requests
 
 
-
-
-
 def get_tweets(query,source):
 
   '''sources: twitter_query, twitter_politicians, twitter_press'''

@@ -23,16 +23,16 @@ import pandas as pd
 
 
 def app():
-    st.title('Regulations')
-    #Page style
-    st.markdown(
-        '<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
-        unsafe_allow_html=True)
+
 
     c1, c2 = st.beta_columns([2, 2])  #search bar and hist
     c3, c4 = st.beta_columns([2, 2])  #search bar and hist
 
+#Page style
 
+    st.markdown(
+        '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
+        unsafe_allow_html=True)
 
     #INPUT SEARCH BAR
     with c1:
@@ -43,8 +43,10 @@ def app():
         '''
         query = st.text_input("Search for a topic", 'Technology')
         st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
+    
+    
 
-    # ??
+    # Loadind todays date for Regulation calendar
     today = datetime.datetime.now()
     limit_date = today + relativedelta(days=-7)
     today_time = today.timestamp()
@@ -194,6 +196,7 @@ def app():
         '''
         ## Regulations
         '''
+        st.title('Regulations')
         ## Range selector
         today = date.today()
         initial_value_for_start_date = today + relativedelta(months=-12)
@@ -218,25 +221,17 @@ def app():
         '''
         ## Consultations
         '''
-        ## Range selector
+        st.title("Consultations")
 
-        #today = date.today()
-        #initial_value_for_start_date = today + relativedelta(months=-12)
-        #initial_value_for_end_date = today
-        #start_date, end_date = st.date_input("Filter consultations by date: ", [initial_value_for_start_date,initial_value_for_end_date])
-        #start_date = pd.to_datetime(start_date).date()
-        #end_date = pd.to_datetime(end_date).date()
+        checkbox_val_1 = st.checkbox("Open")
+        checkbox_val_2 = st.checkbox("Closed")
+        checkbox_val_3 = st.checkbox("Upcoming")
+        checkbox_val_4 = st.checkbox("Disabled")
+        checkbox_val_5 = st.checkbox("Other")
+        
         consultation = get_consultations()
-        expander1 = st.beta_expander("expand")
+        
         expander2 = st.beta_expander("expand")
-
-        with expander1:
-            checkbox_val_1 = st.checkbox("Open")
-            checkbox_val_2 = st.checkbox("Closed")
-            checkbox_val_3 = st.checkbox("Upcoming")
-            checkbox_val_4 = st.checkbox("Disabled")
-            checkbox_val_5 = st.checkbox("Other")
-
         with expander2:
             for i in consultation:
                 if checkbox_val_1:
