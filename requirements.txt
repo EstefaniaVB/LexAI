@@ -34,3 +34,6 @@ termcolor
 # search/database
 meilisearch
 python-dotenv
+
+#sentiment
+nltk
