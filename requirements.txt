@@ -47,7 +47,6 @@ markdown
 
 typing
 altair
-requests
 matplotlib
 streamlit
 plotly
