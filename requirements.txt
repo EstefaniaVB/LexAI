@@ -51,7 +51,6 @@ matplotlib
 streamlit
 plotly
 datetime
-dateutil
 
 pandas
 pydeck
