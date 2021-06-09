@@ -65,7 +65,7 @@ add_tweets_pp:
 	@python LexAI/database.py build_ms_many indices=twitter_press,twitter_politicians
 	@python LexAI/database.py export_json indices=twitter_press,twitter_politicians
 
-add_tweet_query:
+add_tweets_query:
 	@python LexAI/database.py build_ms_many indices=twitter_query
 	@python LexAI/database.py export_json indices=twitter_query
 

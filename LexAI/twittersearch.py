@@ -168,7 +168,8 @@ class TwitterSearch:
             
             results = self.python_tweets.search(**params)['statuses']
             if len(results) != 0:
-                tweets.extend([self.extract_info(result) for result in results])
+                df = pd.DataFrame()
+                tweets.extend([self.extract_info(result, df) for result in results])
         print()
         return tweets
 
