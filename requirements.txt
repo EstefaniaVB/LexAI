@@ -56,7 +56,6 @@ dateutil
 pandas
 pydeck
 geopy
-requests
 wordcloud
 math
 
