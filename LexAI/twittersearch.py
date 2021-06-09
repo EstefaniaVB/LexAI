@@ -99,7 +99,7 @@ class TwitterSearch:
         
         if entry['text_en'] is not None:
             sid = SentimentIntensityAnalyzer()
-            entry['compound_score'] = sid.polarity_scores(entry['text_en'])
+            entry['compound_score'] = sid.polarity_scores(entry['text_en'])['compound']
             if entry['compound_score'] <= -0.2:
                 entry['sentiment'] = 'negative'
             elif entry['compound_score'] > 0.2:
@@ -117,7 +117,7 @@ class TwitterSearch:
         elif len(text) == 0:
             print(datetime.now().strftime("%H:%M:%S: "), 'No text to translate')
             return
-        print(text, self.parent)
+
         response = self.g_client.translate_text(contents=[text], 
                                                 target_language_code=dest, 
                                                 parent=self.parent)
