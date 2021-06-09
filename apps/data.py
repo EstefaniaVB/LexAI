@@ -125,52 +125,6 @@ def app():
 
         return consultations
 
-    def get_news():
-        lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        info = []
-        for i in result["hits"]:
-            link = i["link"]
-            if i["text_en"]:
-                text = i["text_en"]
-            else:
-                text = i["text"]
-            user = i["user"]
-            date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-            info.append({
-                "link": link,
-                "text": text,
-                "user": user,
-                "date": date,
-                "html_link": html_link
-            })
-        return pd.DataFrame(info).sort_values(by="date",
-                                              ascending=False).reset_index()
-
-    def get_politicians():
-        lexai_url = "http://35.223.18.2/indexes/twitter_politicians/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        info = []
-        for i in result["hits"]:
-            link = i["link"]
-            if i["text_en"]:
-                text = i["text_en"]
-            else:
-                text = i["text"]
-            user = i["user"]
-            date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-            info.append({
-                "link": link,
-                "text": text,
-                "user": user,
-                "date": date,
-                "html_link": html_link
-            })
-        return pd.DataFrame(info).sort_values(by="date",
-                                              ascending=False).reset_index()
-
     ### FEATURES ###
 
     # Graph volume regulations
@@ -188,6 +142,45 @@ def app():
             alt.Y('count(year/month)', title='Number of laws')).properties(
                 width=600).configure_axis(grid=False)
         st.write(chart)
+        '''
+        import plotly.graph_objects as go
+        
+        params = dict(q=query, limit=100000)
+        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        result = requests.get(lexai_url, params=params, headers=headers).json()
+        data_eurlex_df = pd.DataFrame(result["hits"])
+        data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
+        fig = go.Figure()
+        fig.add_trace(go.Histogram(
+            x=data_eurlex_df['year/month'],
+        #    xbins=dict(start='2019-01-01', end='2021-06-01', size= 'M1'), # 1 month, 
+        #        autobinx = False,
+        #        name='control',  # name used in legend and hover labels,
+            marker_color='#11E7FB',
+            opacity=0.90,
+            xbins_size=1
+        ))
+        fig.update_layout(
+        #    xaxis_type='date',
+            xaxis_title_text='Month', # xaxis label
+            xaxis_title_font_family='Courier New',
+            xaxis_title_font_color='#731F7D',
+            xaxis_tickfont_family='Courier New',
+            xaxis_tickfont_color='#731F7D',
+            xaxis_categoryorder='category ascending',
+            yaxis_title_text='Number of regulations', # yaxis label
+            yaxis_title_font_family='Courier New',
+            yaxis_title_font_color='#731F7D',
+            yaxis_tickfont_family='Courier New',
+            yaxis_tickfont_color='#731F7D',
+            yaxis_showgrid=True,
+            bargap=0.1, # gap between bars of adjacent location coordinates
+            autosize=False,
+            width=700,
+            height=500,
+            plot_bgcolor='rgba(96, 130, 253,0.06)',
+        )
+        fig.show()'''
 
 
     #Regulation Box
