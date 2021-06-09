@@ -30,7 +30,7 @@ class TwitterSearch:
     #- 900 tweets 15 min
     #- 100000 in 24h
 
-    def __init__(self, id_key='PROJECT_T', trans=False):
+    def __init__(self, id_key='PROJECT_E', trans=False):
         # Enter your keys/secrets as strings in the following fields
         self.trans = trans
         
@@ -43,7 +43,7 @@ class TwitterSearch:
         self.python_tweets = Twython(self.creds['CONSUMER_KEY'],
                                      self.creds['CONSUMER_SECRET'])
         
-        project_id = os.getenv(id_key)  # change to your project ID env key
+        project_id = os.getenv('PROJECT_E')  # change to your project ID env key
         self.parent = f"projects/{project_id}"
         self.g_client = translate.TranslationServiceClient()
         
@@ -87,31 +87,37 @@ class TwitterSearch:
         
         entry['timestamp'] = mktime(dt.timetuple())
         entry['link'] = f"https://twitter.com/{entry['user']}/status/{entry['id']}"
-        
+
+        user = entry['user'].lower().strip()
         if all(col in df.columns for col in ['name', 'country', 'eu_group', 'national_group']):
-            entry['name'] = df[df['twitter'] == entry['user']]['name'].iloc[0]
-            entry['country'] = df[df['twitter'] == entry['user']]['country'].iloc[0]
-            entry['eu_group'] = df[df['twitter'] == entry['user']]['eu_group'].iloc[0]
-            entry['national_group'] = df[df['twitter'] == entry['user']]['national_group'].iloc[0]
+            entry['name'] = df[df['twitter'].str.lower() == user]['name'].iloc[0]
+            entry['country'] = df[df['twitter'].str.lower() == user]['country'].iloc[0]
+            entry['eu_group'] = df[df['twitter'].str.lower() == user]['eu_group'].iloc[0]
+            entry['national_group'] = df[df['twitter'].str.lower() == user]['national_group'].iloc[0]
         elif 'media' in df.columns:
-            entry['name'] = df[df['twitter'] == entry['user']]['media'].iloc[0]
+            entry['name'] = df[df['twitter'].str.lower() == user]['media'].iloc[0]
         
-        sid = SentimentIntensityAnalyzer()
-        entry['compound_score'] = sid.polarity_scores(entry['text_en'])
-        if entry['compound_score'] <= -0.2:
-            entry['sentiment'] = 'negative'
-        elif entry['compound_score'] > 0.2:
-            entry['sentiment'] = 'positive'
-        else:
-            entry['sentiment'] = 'neutral'
+        if entry['text_en'] is not None:
+            sid = SentimentIntensityAnalyzer()
+            entry['compound_score'] = sid.polarity_scores(entry['text_en'])
+            if entry['compound_score'] <= -0.2:
+                entry['sentiment'] = 'negative'
+            elif entry['compound_score'] > 0.2:
+                entry['sentiment'] = 'positive'
+            else:
+                entry['sentiment'] = 'neutral'
         
         return entry
 
     def gtrans(self, text, dest='en'):
         '''this function represents the google translate API. use wisely!
         its expensive (20$/1mio characters, makes only 5000 tweets).'''
-        if len(text) == 0 or not self.trans:
+        if not self.trans:
             return
+        elif len(text) == 0:
+            print(datetime.now().strftime("%H:%M:%S: "), 'No text to translate')
+            return
+        print(text, self.parent)
         response = self.g_client.translate_text(contents=[text], 
                                                 target_language_code=dest, 
                                                 parent=self.parent)
@@ -170,8 +176,10 @@ class TwitterSearch:
             return None
         elif usernames == 'press':
             df = self.load_users()[0]
+            usernames = list(df['twitter'])
         elif usernames == 'politicians':
             df = self.load_users()[1]
+            usernames = list(df['twitter'])
         elif not isinstance(usernames, list):
             df = pd.DataFrame()
             usernames = usernames.split(',')

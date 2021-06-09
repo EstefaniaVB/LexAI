@@ -27,23 +27,28 @@ class Database(TwitterSearch, Analyse):
     def __init__(self, url='http://35.223.18.2', key=None,
                  indices=['eurlex', 'consultations', 'twitter_query', 
                           'twitter_press', 'twitter_politicians'],
-                 trans=False):
+                 trans=True):
 
         if key is None:
             key = os.getenv('MEILISEARCH_KEY')
         
-        super().__init__('PROJECT_E')
+        super().__init__('PROJECT_T', trans)
         super().__init__(url, key)
+        project_id = os.getenv('PROJECT_E')  # change to your project ID env key
+        self.parent = f"projects/{project_id}"
+        
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
+        """ # NOT WORKING
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
             if index not in ms_indices:
                 self.client.create_index(index, {'primaryKey': 'id'})
                 print(f'Created index: {index}')
-
+        """
+        
         self.client.index('eurlex').update_settings({
             'searchableAttributes': ['title', 'author', 'date', 'timestamp'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
@@ -250,7 +255,6 @@ class Database(TwitterSearch, Analyse):
             ]
         elif not isinstance(queries, list):
             queries = queries.split(',')
-        print(indices)
         pages = int(pages)
         
         if indices is None:
