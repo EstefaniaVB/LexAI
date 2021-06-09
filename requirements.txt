@@ -42,8 +42,19 @@ streamlit
 
 
 #stramlit app
-typing 
+
 markdown
+
+typing
+altair
 matplotlib
+streamlit
 plotly
 datetime
+
+pandas
+pydeck
+geopy
+wordcloud
+
+multiapp
