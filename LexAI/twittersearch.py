@@ -139,12 +139,14 @@ class TwitterSearch:
         it uses the google-translate API wich kosts 20$ per ~5000 tweets 
         result_type options 'mixed','popular','recent' '''
         
-        if not isinstance(lang, list):
-            lang = [lang]
+        if lang is None:
+            lang_list = ['en','de','fr','el','it','es', 'pl', 'ro', 'nl', 'hu', 
+                         'pt', 'sv', 'cs', 'bg', 'sk', 'da', 'fi', 'hr', 'lt']
+        elif isinstance(lang, list):
+            lang_list = [l.lower() for l in lang]
+        else:
+            lang_list = [lang.lower()]
         
-        lang_list = ['en','de','fr','el','it','es', 'pl', 'ro', 'nl', 
-                     'hu', 'pt', 'sv', 'cs', 'bg', 'sk', 'da', 'fi', 'hr', 
-                     'lt'] if lang is None else [l.lower() for l in lang]
         geocode = {'en': '51.51753,-0.11214,1000km',
                    'fr': '47.22283,2.07099,1000km',
                    'es': '40.42955,-3.67930,1000km',
