@@ -56,6 +56,5 @@ pandas
 pydeck
 geopy
 wordcloud
-math
 
 multiapp
