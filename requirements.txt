@@ -59,29 +59,3 @@ wordcloud
 
 multiapp
 bokeh
-
-
-'''
-from dateutil.relativedelta import relativedelta  # to add days or years
-import streamlit as st
-import requests
-import pandas as pd
-import plotly.graph_objects as go
-from bokeh.models.widgets import Div
-import streamlit as st
-from multiapp import MultiApp
-from apps import home, data, model # import your app modules here
-from matplotlib import pyplot as plt
-from matplotlib import colors 
-import streamlit.components.v1 as components
-import requests
-import matplotlib.pyplot as plt
-import streamlit as st
-import datetime
-from dateutil.relativedelta import relativedelta  # to add days or years
-import pydeck as pdk
-from wordcloud import WordCloud, STOPWORDS
-import pandas as pd
-import functions as fc
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots'''
