@@ -8,24 +8,33 @@ import pandas as pd
 import plotly.graph_objects as go
 
 def app():
-
-
-#    c1, c2 = st.beta_columns([2, 2])  #search bar and hist
-
-#Page style
-
+    #Page style
     st.markdown(
         '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
         unsafe_allow_html=True)
-    st.markdown(
-        '<style>h3{color: #6082FD;font-family: Arial, Helvetica, sans-serif;font_size:1} </style>',
-        unsafe_allow_html=True)
 
-    #INPUT SEARCH BAR
-    #with c1:
-    query = st.text_input("Search for a topic", 'Technology')
-    st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
-    
+
+
+    # columns
+    c1, c2 = st.beta_columns([1, 3])  #search bar and hist
+    c3, c4 = st.beta_columns([2, 2])  #search bar and hist
+
+
+    with c1:
+        #INPUT SEARCH BAR
+        query = st.text_input("Search for a topic", 'Technology')
+        st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
+        st.write('About LexAI:')
+        st.write('')
+        st.write('LexAI helps you keep track of EU regulations and social media sentiment on any given topic.')
+        st.write('')
+        st.write('Enter a keyword in the search bar to see the latest regulations on your topic. ')
+        st.write('')
+        st.write('Follow the links to learn more and give your opinion on future regulations thanks to the consultations feature')
+
+
+
+
 
     # Loadind todays date for Regulation calendar
     today = datetime.datetime.now()
@@ -153,6 +162,47 @@ def app():
 #Regulation Box
 
     with c2:
+        params = dict(q=query, limit=100000)
+        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        result = requests.get(lexai_url, params=params, headers=headers).json()
+        data_eurlex_df = pd.DataFrame(result["hits"])
+        data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
+        fig = go.Figure()
+        fig.add_trace(go.Histogram(
+            x=data_eurlex_df['year/month'],
+        #    xbins=dict(start='2019-01-01', end='2021-06-01', size= 'M1'), # 1 month,
+        #        autobinx = False,
+        #        name='control',  # name used in legend and hover labels,
+            marker_color='#6082FD',
+            opacity=0.90,
+            xbins_size=1
+        ))
+        fig.update_layout(
+        #    xaxis_type='date',
+            xaxis_title_text='Month', # xaxis label
+            xaxis_title_font_family='Courier New',
+            xaxis_title_font_color='#731F7D',
+            xaxis_tickfont_family='Courier New',
+            xaxis_tickfont_color='#731F7D',
+            xaxis_categoryorder='category ascending',
+            yaxis_title_text='Number of regulations', # yaxis label
+            yaxis_title_font_family='Courier New',
+            yaxis_title_font_color='#731F7D',
+            yaxis_tickfont_family='Courier New',
+            yaxis_tickfont_color='#731F7D',
+            yaxis_showgrid=True,
+            bargap=0.1, # gap between bars of adjacent location coordinates
+            autosize=False,
+            width=1000,
+            height=500,
+            plot_bgcolor='rgba(96, 130, 253,0.06)',
+        )
+        st.plotly_chart(fig)
+
+
+    #Regulation Box
+
+    with c3:
         '''
         ## Regulations
         '''
@@ -193,9 +243,9 @@ def app():
         checkbox_val_3 = st.checkbox("Upcoming")
         checkbox_val_4 = st.checkbox("Disabled")
         checkbox_val_5 = st.checkbox("Other")
-        
+
         consultation = get_consultations()
-        
+
         expander2 = st.beta_expander("expand")
         with expander2:
             for i in consultation:
