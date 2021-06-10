@@ -172,7 +172,17 @@ def app():
                      font_size=18,
                      font_color='#731F7D',
                      showarrow=False)
-            ])
+            ],
+            autosize=False,
+            width=800,
+            height=400,
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=0,
+                pad=1
+            )
         st.plotly_chart(fig)
 
     ### FEATURES ###

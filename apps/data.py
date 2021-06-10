@@ -148,7 +148,7 @@ def app():
             yaxis_showgrid=True,
             bargap=0.1, # gap between bars of adjacent location coordinates
             autosize=False,
-            width=1200,
+            width=1000,
             height=500,
             plot_bgcolor='rgba(96, 130, 253,0.06)',
         )
