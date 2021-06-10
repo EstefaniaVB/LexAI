@@ -96,6 +96,7 @@ class TwitterSearch:
             entry['national_group'] = df[df['twitter'].str.lower() == user]['national_group'].iloc[0]
         elif 'media' in df.columns:
             entry['name'] = df[df['twitter'].str.lower() == user]['media'].iloc[0]
+            entry['country'] = df[df['twitter'].str.lower() == user]['country'].iloc[0]
         
         if entry['text_en'] is not None:
             sid = SentimentIntensityAnalyzer()
