@@ -1,21 +1,11 @@
 import requests
-from plotly.subplots import make_subplots
 import datetime
 from dateutil.relativedelta import relativedelta  # to add days or years
 from datetime import date
 import streamlit as st
 import requests
-import altair as alt
 import pandas as pd
-#import matplotlib.pyplot as plt
-#from typing import List, Optional
-#from altair.vegalite.v4.schema.core import Month
-#import streamlit.components.v1 as components
-#import pydeck as pdk
-#from geopy.geocoders import Nominatim
-#from wordcloud import WordCloud, STOPWORDS
-#import numpy as np
-#import math
+import plotly.graph_objects as go
 
 
 def app():
@@ -120,22 +110,6 @@ def app():
 
     # Graph volume regulations
     with c2:
-        '''
-        params = dict(q=query, limit=100000)
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        data_eurlex_df = pd.DataFrame(result["hits"])
-
-        data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
-
-        source = data_eurlex_df
-        chart = alt.Chart(source).mark_bar().encode(
-            alt.X('year/month', title='Year / Month'),
-            alt.Y('count(year/month)', title='Number of laws')).properties(
-                width=600).configure_axis(grid=False)
-        st.write(chart)
-        '''
-        import plotly.graph_objects as go
         
         params = dict(q=query, limit=100000)
         lexai_url = "http://35.223.18.2/indexes/eurlex/search"
