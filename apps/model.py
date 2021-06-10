@@ -1,37 +1,18 @@
-from typing import List, Optional
-from altair.vegalite.v4.schema.core import Month
 import streamlit.components.v1 as components
 import requests
 import matplotlib.pyplot as plt
 import streamlit as st
-from plotly.subplots import make_subplots
-import streamlit as st
 import datetime
 from dateutil.relativedelta import relativedelta  # to add days or years
-from datetime import date
-import streamlit as st
-import pandas as pd
 import pydeck as pdk
-from geopy.geocoders import Nominatim
-import requests
-#import altair as alt
 from wordcloud import WordCloud, STOPWORDS
-#import math
-#import altair as alt
-#import numpy as np
 import pandas as pd
-#import math
-from geopy import geocoders
-from geopy.geocoders import Nominatim
-import requests
 import functions as fc
 
 def app():
-    st.title('Opinions')
-
     #Page style
     st.markdown(
-        '<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
+        '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
         unsafe_allow_html=True)
 
 
@@ -40,14 +21,9 @@ def app():
     c2, c3= st.beta_columns([2, 2])  #search bar and hist
     #c7 = st.beta_columns([4])
 
-
     #INPUT SEARCH BAR
+    
     with c1:
-        #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
-        st.image('Images/LexAI2.png', width=200)
-        '''
-        ## Navigating public fora
-        '''
         query = st.text_input("Search for a topic", 'Technology')
         st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
 
@@ -87,49 +63,7 @@ def app():
                                       params=tweet_params,
                                       headers=headers).json()
 
-    def get_regulation():
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        reg = []
-        for i in result["hits"]:
-            title = i["title"]
-            author = i['author']
-            date = pd.to_datetime(i['date']).date()
-            link = i['link']
-            reg.append({
-                "title": title,
-                "author": author,
-                "date": date,
-                "link": link
-            })
-
-        return reg
-
-    def get_consultations():
-        lexai_url = "http://35.223.18.2/indexes/consultations/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        consultations = []
-        for i in result["hits"]:
-            title = i['title']
-            topics = i['topics']
-            type_of_act = i['type_of_act']
-            status = i["status"]
-            try:
-                end_date = pd.to_datetime(i['end_date']).date()
-            except:
-                end_date = pd.to_datetime(i['end_date'])
-            link = i['link']
-            consultations.append({
-                "title": title,
-                "status": status,
-                "topics": topics,
-                "type_of_act": type_of_act,
-                "end_date": end_date,
-                "link": link
-            })
-
-        return consultations
-
+    @st.cache(allow_output_mutation=True)
     def get_news():
         lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
@@ -142,7 +76,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -152,7 +86,7 @@ def app():
             })
         return pd.DataFrame(info).sort_values(by="date",
                                               ascending=False).reset_index()
-
+    @st.cache(allow_output_mutation=True)
     def get_politicians():
         lexai_url = "http://35.223.18.2/indexes/twitter_politicians/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
@@ -165,7 +99,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -180,6 +114,8 @@ def app():
     ### FEATURES ###
     #Industry news
     with c2:
+        st.title('Industry News')
+
         '''
         ## Industry News
         '''
@@ -193,6 +129,8 @@ def app():
 
     #Politician news
     with c3:
+        st.title('Politicians News')
+
         '''
         ## Politicians News
         '''
@@ -212,6 +150,8 @@ def app():
         return f'{val:.0f}%'
 
     with c4:
+        
+        st.title('Twitter sentiment')
         '''
         ## Twitter sentiment
         '''
@@ -228,6 +168,8 @@ def app():
         st.write(fig)
 
     with c5:
+        st.title('On Topic sentiment')
+
         '''
         ## On Topic sentiment
         '''
@@ -246,6 +188,8 @@ def app():
 
     # cloud of words
     with c6:
+        st.title('Trending topics')
+
         '''
         ## Trending topics
         '''
@@ -270,29 +214,19 @@ def app():
         text = ' '.join(item for item in hashtags)
 
         # Define a function to plot word cloud
-        def plot_cloud(wordcloud):
+        #def plot_cloud(wordcloud):
             # Set figure size
-            plt.figure(figsize=(8, 16))
+        #    plt.figure(figsize=(8, 16))
             # Display image
-            plt.imshow(wordcloud)
+        #    plt.imshow(wordcloud) 
             # No axis details
-            plt.axis("off")
-
+        #    plt.axis("off");
+            
         # Import package
-
         STOPWORDS.add(query)
         # Generate word cloud
-        wordcloud = WordCloud(width=800,
-                              height=400,
-                              random_state=1,
-                              background_color='white',
-                              colormap='gray',
-                              mode='RGB',
-                              collocations=False,
-                              stopwords=STOPWORDS,
-                              max_words=10).generate(text)
+        wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
         # Plot
-
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
         plt.show()
@@ -301,17 +235,35 @@ def app():
 
 
     #with c7:
-    ######### all the data part ########
-    source = 'twitter_query'     #sources: twitter_query, twitter_politicians, twitter_press
+    
+    option = st.selectbox(
+        'Which tweets source do you want?',
+        ('twitter_query', 'twitter_politicians', 'twitter_press')
+        
+        )
+
+    if option == 'twitter_query':
+        option2 = st.selectbox(
+        'Which region-type do you want?',
+        ('City', 'Country')
+        
+        )
+
+    query = st.text_input('Input your searchword here:')
+    source = option     #sources: twitter_query, twitter_politicians, twitter_press
 
     ####### api retrieve #######
 
     data_dict = fc.get_tweets(query,source)
-
+    
     ####### refining the dataframes #######
 
     if source == 'twitter_query':
-        map_data = fc.refine_cities(data_dict)
+        if option2 == 'City':
+            map_data = fc.refine_cities(data_dict)
+        if option2 == 'Country':
+            map_data = fc.refine_countries(data_dict)
+
 
     else:
         map_data = fc.refine_countries(data_dict)
@@ -322,6 +274,9 @@ def app():
 
 
     st.title(f'source: {source}')
+
+
+    st.write('You selected:', option)
 
 
     map_tweets_loc = map_data
@@ -335,8 +290,8 @@ def app():
             "<b>Tweets:</b> {tweets} <br/>"
             "<b>Retweets:</b> {retweets} <br/>"
             "<b>Likes:</b> {likes} <br/>"
-            "<b>Sentiment (per tweet):</b> {sent_ref} <br/>",
-
+            "<b>Sentiment (per tweet):</b> {sentiment} <br/>",
+        
         "style": {
             "backgroundColor": "white",
             "color": "grey",
@@ -349,8 +304,8 @@ def app():
             "<b>Tweets:</b> {tweets} <br/>"
             "<b>Retweets:</b> {retweets} <br/>"
             "<b>Likes:</b> {likes} <br/>"
-            "<b>Sentiment (per tweet):</b> {sent_ref} <br/>",
-
+            "<b>Sentiment score:</b> {sentiment} <br/>",
+        
         "style": {
             "backgroundColor": "white",
             "color": "grey",
@@ -358,7 +313,11 @@ def app():
     }
 
     if source == 'twitter_query':
-        tooltip = tooltip_city
+        if option2 == 'City':
+            tooltip = tooltip_city
+        else:
+            tooltip = tooltip_country
+
     else:
         tooltip = tooltip_country
 
@@ -369,7 +328,7 @@ def app():
         latitude=48.19231,
         longitude=16.37136,
         zoom=3,
-        pitch=50,
+        pitch=0,
     ),
     layers = [pdk.Layer(
             'ScatterplotLayer',

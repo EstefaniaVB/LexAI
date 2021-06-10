@@ -24,6 +24,10 @@ mlflow
 s3fs
 uvicorn
 fastapi
+bs4
+twython==3.8.2
+requests==2.25.1
+
 
 # utilities
 six>=1.14
@@ -34,6 +38,23 @@ termcolor
 # search/database
 meilisearch
 python-dotenv
+streamlit
 
-# app
+
+#stramlit app
+
+markdown
+
+typing
+altair
+matplotlib
+streamlit
 plotly
+datetime
+
+pandas
+pydeck
+geopy
+wordcloud
+
+multiapp
