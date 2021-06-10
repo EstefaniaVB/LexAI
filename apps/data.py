@@ -17,6 +17,9 @@ def app():
     st.markdown(
         '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
         unsafe_allow_html=True)
+    st.markdown(
+        '<style>h3{color: #6082FD;font-family: Arial, Helvetica, sans-serif;font_size:1} </style>',
+        unsafe_allow_html=True)
 
     #INPUT SEARCH BAR
     #with c1:
@@ -168,10 +171,15 @@ def app():
         with expander:
             for i in regulation:
                 if i["date"] >= start_date and i["date"] <= end_date:
-                    st.write('Title: ', i["title"])
-                    st.write('Author: ', i["author"])
-                    st.write('Date: ', i["date"])
-                    st.write('Link: ', i["link"])
+                    st.markdown(f'**Title:  **{i["title"]}',
+        unsafe_allow_html=True)
+                    st.markdown(f'**Author:  **{i["author"]}',
+        unsafe_allow_html=True)
+                    st.markdown(f'**Date:  **{i["date"]}',
+        unsafe_allow_html=True)
+                    st.markdown(f'**Link:  **{i["link"]}',
+        unsafe_allow_html=True)
+                    st.write("----------------------")
 
     #Deadlines Box
     with c4:
