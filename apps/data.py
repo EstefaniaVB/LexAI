@@ -1,25 +1,21 @@
-from typing import List, Optional
-from altair.vegalite.v4.schema.core import Month
-import streamlit.components.v1 as components
 import requests
-import matplotlib.pyplot as plt
-import streamlit as st
 from plotly.subplots import make_subplots
-import streamlit as st
 import datetime
 from dateutil.relativedelta import relativedelta  # to add days or years
 from datetime import date
 import streamlit as st
-import pandas as pd
-import pydeck as pdk
-from geopy.geocoders import Nominatim
 import requests
 import altair as alt
-from wordcloud import WordCloud, STOPWORDS
-import math
-import altair as alt
-import numpy as np
 import pandas as pd
+#import matplotlib.pyplot as plt
+#from typing import List, Optional
+#from altair.vegalite.v4.schema.core import Month
+#import streamlit.components.v1 as components
+#import pydeck as pdk
+#from geopy.geocoders import Nominatim
+#from wordcloud import WordCloud, STOPWORDS
+#import numpy as np
+#import math
 
 
 def app():
@@ -36,11 +32,6 @@ def app():
 
     #INPUT SEARCH BAR
     with c1:
-        #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
-        st.image('Images/LexAI2.png', width=200)
-        '''
-        ## Navigating public fora
-        '''
         query = st.text_input("Search for a topic", 'Technology')
         st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
     
@@ -129,6 +120,7 @@ def app():
 
     # Graph volume regulations
     with c2:
+        '''
         params = dict(q=query, limit=100000)
         lexai_url = "http://35.223.18.2/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
@@ -156,7 +148,7 @@ def app():
         #    xbins=dict(start='2019-01-01', end='2021-06-01', size= 'M1'), # 1 month, 
         #        autobinx = False,
         #        name='control',  # name used in legend and hover labels,
-            marker_color='#11E7FB',
+            marker_color='#6082FD',
             opacity=0.90,
             xbins_size=1
         ))
@@ -176,11 +168,11 @@ def app():
             yaxis_showgrid=True,
             bargap=0.1, # gap between bars of adjacent location coordinates
             autosize=False,
-            width=700,
+            width=800,
             height=500,
             plot_bgcolor='rgba(96, 130, 253,0.06)',
         )
-        fig.show()'''
+        st.plotly_chart(fig)
 
 
     #Regulation Box

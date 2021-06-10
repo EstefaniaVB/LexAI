@@ -3,16 +3,29 @@ import numpy as np
 import pandas as pd
 import pydeck as pdk
 import math
-from geopy import geocoders
-from geopy.geocoders import Nominatim
 import requests
 import functions as fc
 
 
 ######### all the data part ########
 
-query = 'energy'
-source = 'twitter_query'     #sources: twitter_query, twitter_politicians, twitter_press
+
+
+option = st.selectbox(
+     'Which tweets source do you want?',
+     ('twitter_query', 'twitter_politicians', 'twitter_press')
+     
+     )
+
+if option == 'twitter_query':
+    option2 = st.selectbox(
+     'Which region-type do you want?',
+     ('City', 'Country')
+     
+     )
+
+#query = st.text_input('Input your searchword here:')
+source = option     #sources: twitter_query, twitter_politicians, twitter_press
 
 ####### api retrieve #######
 
@@ -21,7 +34,11 @@ data_dict = fc.get_tweets(query,source)
 ####### refining the dataframes #######
 
 if source == 'twitter_query':
-    map_data = fc.refine_cities(data_dict)
+    if option2 == 'City':
+        map_data = fc.refine_cities(data_dict)
+    if option2 == 'Country':
+        map_data = fc.refine_countries(data_dict)
+
 
 else:
     map_data = fc.refine_countries(data_dict)
@@ -32,6 +49,9 @@ else:
 
 
 st.title(f'source: {source}')
+
+
+st.write('You selected:', option)
 
 
 map_tweets_loc = map_data
@@ -45,7 +65,7 @@ tooltip_country = {     #tooltip shows a chart when the user hovers over the map
         "<b>Tweets:</b> {tweets} <br/>"
         "<b>Retweets:</b> {retweets} <br/>"
         "<b>Likes:</b> {likes} <br/>"
-        "<b>Sentiment (per tweet):</b> {sent_ref} <br/>",
+        "<b>Sentiment (per tweet):</b> {sentiment} <br/>",
     
     "style": {
         "backgroundColor": "white",
@@ -59,7 +79,7 @@ tooltip_city = {     #tooltip shows a chart when the user hovers over the map
         "<b>Tweets:</b> {tweets} <br/>"
         "<b>Retweets:</b> {retweets} <br/>"
         "<b>Likes:</b> {likes} <br/>"
-        "<b>Sentiment (per tweet):</b> {sent_ref} <br/>",
+        "<b>Sentiment score:</b> {sentiment} <br/>",
     
     "style": {
         "backgroundColor": "white",
@@ -68,9 +88,13 @@ tooltip_city = {     #tooltip shows a chart when the user hovers over the map
 }
 
 if source == 'twitter_query':
-  tooltip = tooltip_city
+    if option2 == 'City':
+        tooltip = tooltip_city
+    else:
+        tooltip = tooltip_country
+
 else:
-  tooltip = tooltip_country
+    tooltip = tooltip_country
 
 st.pydeck_chart(pdk.Deck(
 map_style='mapbox://styles/mapbox/light-v9',
@@ -79,7 +103,7 @@ initial_view_state=pdk.ViewState(
     latitude=48.19231,
     longitude=16.37136,
     zoom=3,
-    pitch=50,
+    pitch=0,
 ),
 layers = [pdk.Layer(
           'ScatterplotLayer',

@@ -1,10 +1,7 @@
 import streamlit as st
-import io
 from typing import List, Optional
 import streamlit.components.v1 as components
 import requests
-import markdown
-import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.graph_objects as go

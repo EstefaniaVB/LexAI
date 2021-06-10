@@ -1,28 +1,27 @@
-#from typing import List, Optional
-#from altair.vegalite.v4.schema.core import Month
 import streamlit.components.v1 as components
 import requests
 import matplotlib.pyplot as plt
 import streamlit as st
-#from plotly.subplots import make_subplots
 import datetime
 from dateutil.relativedelta import relativedelta  # to add days or years
-#from datetime import date
 import pydeck as pdk
+from wordcloud import WordCloud, STOPWORDS
+import pandas as pd
+import functions as fc
+#from typing import List, Optional
+#from altair.vegalite.v4.schema.core import Month
+#from plotly.subplots import make_subplots
+#from datetime import date
 #from geopy.geocoders import Nominatim
 #import altair as alt
-from wordcloud import WordCloud, STOPWORDS
 #import math
 #import altair as alt
 #import numpy as np
-import pandas as pd
 #import math
 #from geopy import geocoders
 #from geopy.geocoders import Nominatim
-import functions as fc
 
 def app():
-    
     #Page style
     st.markdown(
         '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
@@ -37,13 +36,6 @@ def app():
     #INPUT SEARCH BAR
     
     with c1:
-        #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
-        st.image('Images/LexAI2.png', width=200)
-        #st.subheader('Navigating public fora')
-
-        '''
-        ## Navigating public fora
-        '''
         query = st.text_input("Search for a topic", 'Technology')
         st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
 
@@ -96,7 +88,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -119,7 +111,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -255,6 +247,7 @@ def app():
 
 
     #with c7:
+    '''
     ######### all the data part ########
     source = 'twitter_query'     #sources: twitter_query, twitter_politicians, twitter_press
 
@@ -324,6 +317,112 @@ def app():
         longitude=16.37136,
         zoom=3,
         pitch=50,
+    ),
+    layers = [pdk.Layer(
+            'ScatterplotLayer',
+            data=map_tweets_loc,
+            pickable=True,
+            get_position='[lon, lat]',
+            get_color=['r', 'g', 'b', 's'],
+            get_radius= 'radius',
+        ),
+        ],
+    ))'''
+    
+    
+    option = st.selectbox(
+        'Which tweets source do you want?',
+        ('twitter_query', 'twitter_politicians', 'twitter_press')
+        
+        )
+
+    if option == 'twitter_query':
+        option2 = st.selectbox(
+        'Which region-type do you want?',
+        ('City', 'Country')
+        
+        )
+
+    query = st.text_input('Input your searchword here:')
+    source = option     #sources: twitter_query, twitter_politicians, twitter_press
+
+    ####### api retrieve #######
+
+    data_dict = fc.get_tweets(query,source)
+    
+    ####### refining the dataframes #######
+
+    if source == 'twitter_query':
+        if option2 == 'City':
+            map_data = fc.refine_cities(data_dict)
+        if option2 == 'Country':
+            map_data = fc.refine_countries(data_dict)
+
+
+    else:
+        map_data = fc.refine_countries(data_dict)
+
+
+
+    ######streamlit part#####
+
+
+    st.title(f'source: {source}')
+
+
+    st.write('You selected:', option)
+
+
+    map_tweets_loc = map_data
+
+
+    ###plotting our tweet-counts on a geographical map ###
+
+    tooltip_country = {     #tooltip shows a chart when the user hovers over the map
+        "html":
+            "<b>Country:</b> {country} <br/>"
+            "<b>Tweets:</b> {tweets} <br/>"
+            "<b>Retweets:</b> {retweets} <br/>"
+            "<b>Likes:</b> {likes} <br/>"
+            "<b>Sentiment (per tweet):</b> {sentiment} <br/>",
+        
+        "style": {
+            "backgroundColor": "white",
+            "color": "grey",
+        }
+    }
+
+    tooltip_city = {     #tooltip shows a chart when the user hovers over the map
+        "html":
+            "<b>City:</b> {city} <br/>"
+            "<b>Tweets:</b> {tweets} <br/>"
+            "<b>Retweets:</b> {retweets} <br/>"
+            "<b>Likes:</b> {likes} <br/>"
+            "<b>Sentiment score:</b> {sentiment} <br/>",
+        
+        "style": {
+            "backgroundColor": "white",
+            "color": "grey",
+        }
+    }
+
+    if source == 'twitter_query':
+        if option2 == 'City':
+            tooltip = tooltip_city
+        else:
+            tooltip = tooltip_country
+
+    else:
+        tooltip = tooltip_country
+
+    st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    tooltip=tooltip,
+    initial_view_state=pdk.ViewState(
+        latitude=48.19231,
+        longitude=16.37136,
+        zoom=3,
+        pitch=0,
     ),
     layers = [pdk.Layer(
             'ScatterplotLayer',
