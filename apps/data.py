@@ -86,7 +86,7 @@ def app():
                 "link": link
             })
 
-        return reg
+        return pd.DataFrame(reg).sort_values(by=["date"] ,ascending= False).reset_index()
 
     def get_consultations():
         lexai_url = "http://35.223.18.2/indexes/consultations/search"
@@ -110,8 +110,7 @@ def app():
                 "end_date": end_date,
                 "link": link
             })
-
-        return consultations
+        return pd.DataFrame(consultations).sort_values(by=["end_date"] ,ascending= False).reset_index()
 
     ### FEATURES ###
 
@@ -174,13 +173,13 @@ def app():
         regulation = get_regulation()
         expander = st.beta_expander("expand")
         with expander:
-            for i in regulation:
-                if i["date"] >= start_date and i["date"] <= end_date:
-                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253;">Author: </span></strong>{i["author"]}</p>',unsafe_allow_html=True)
-                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Date: </span></strong>{i["date"]}</p>',unsafe_allow_html=True)
+            for i in range(len(regulation)):
+                if regulation["date"][i] >= start_date and regulation["date"][i] <= end_date:
+                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{regulation["title"][i]}</p>',unsafe_allow_html=True)
+                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253;">Author: </span></strong>{regulation["author"][i]}</p>',unsafe_allow_html=True)
+                    st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Date: </span></strong>{regulation["date"][i]}</p>',unsafe_allow_html=True)
                     if st.button('Link', key=i):
-                        js = f"window.open('{i['link']}')"
+                        js = f"window.open('{regulation['link'][i]}')"
                         html = '<img src onerror="{}">'.format(js)
                         div = Div(text=html)
                         st.bokeh_chart(div)
@@ -203,68 +202,68 @@ def app():
 
         expander2 = st.beta_expander("expand")
         with expander2:
-            for i in consultation:
+            for i in range(len(consultation)):
                 if checkbox_val_1:
-                    if i["status"] == "OPEN":
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{i["status"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
-                            js = f"window.open('{i['link']}')"
+                    if consultation["status"][i] == "OPEN":
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{consultation["title"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{consultation["status"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{consultation["topics"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{consultation["type_of_act"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{consultation["end_date"][i]}</p>',unsafe_allow_html=True)
+                        if st.button('Link', key=f'{i}.'):
+                            js = f"window.open('{consultation['link'][i]}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
                             st.bokeh_chart(div)
                         st.write('-----')
                 if checkbox_val_2:
-                    if i["status"] == "UPCOMING":
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{i["status"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
-                            js = f"window.open('{i['link']}')"
+                    if consultation["status"][i] == "UPCOMING":
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{consultation["title"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{consultation["status"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{consultation["topics"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{consultation["type_of_act"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{consultation["end_date"][i]}</p>',unsafe_allow_html=True)
+                        if st.button('Link', key=f'{i}:'):
+                            js = f"window.open('{consultation['link'][i]}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
                             st.bokeh_chart(div)
                         st.write('-----')
                 if checkbox_val_3:
-                    if i["status"] == "CLOSED":
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{i["status"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
-                            js = f"window.open('{i['link']}')"
+                    if consultation["status"][i] == "CLOSED":
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{consultation["title"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{consultation["status"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{consultation["topics"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{consultation["type_of_act"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{consultation["end_date"][i]}</p>',unsafe_allow_html=True)
+                        if st.button('Link', key=f'{i},'):
+                            js = f"window.open('{consultation['link'][i]}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
                             st.bokeh_chart(div)
                         st.write('-----')
                 if checkbox_val_4:
-                    if i["status"] == "DISABLE":
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{i["status"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
-                            js = f"window.open('{i['link']}')"
+                    if consultation["status"][i] == "DISABLE":
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{consultation["title"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{consultation["status"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{consultation["topics"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{consultation["type_of_act"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{consultation["end_date"][i]}</p>',unsafe_allow_html=True)
+                        if st.button('Link', key=f'{i}_'):
+                            js = f"window.open('{consultation['link'][i]}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
                             st.bokeh_chart(div)
                         st.write('-----')
                 if checkbox_val_5:
-                    if i["status"] == "OTHER":
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{i["status"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
-                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
-                            js = f"window.open('{i['link']}')"
+                    if consultation["status"][i] == "OTHER":
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{consultation["title"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Status: </span></strong>{consultation["status"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{consultation["topics"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{consultation["type_of_act"][i]}</p>',unsafe_allow_html=True)
+                        st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{consultation["end_date"][i]}</p>',unsafe_allow_html=True)
+                        if st.button('Link', key=f'{i}-'):
+                            js = f"window.open('{consultation['link'][i]}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
                             st.bokeh_chart(div)
