@@ -7,7 +7,6 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 
-
 def app():
 
 
@@ -60,7 +59,6 @@ def app():
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
-
     def get_regulation():
         lexai_url = "http://35.223.18.2/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
@@ -78,7 +76,7 @@ def app():
             })
 
         return reg
-
+        
     def get_consultations():
         lexai_url = "http://35.223.18.2/indexes/consultations/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
