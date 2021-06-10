@@ -213,14 +213,6 @@ def app():
 
         text = ' '.join(item for item in hashtags)
 
-        # Define a function to plot word cloud
-        #def plot_cloud(wordcloud):
-            # Set figure size
-        #    plt.figure(figsize=(8, 16))
-            # Display image
-        #    plt.imshow(wordcloud) 
-            # No axis details
-        #    plt.axis("off");
             
         # Import package
         STOPWORDS.add(query)
@@ -249,7 +241,6 @@ def app():
         
         )
 
-    query = st.text_input('Input your searchword here:')
     source = option     #sources: twitter_query, twitter_politicians, twitter_press
 
     ####### api retrieve #######

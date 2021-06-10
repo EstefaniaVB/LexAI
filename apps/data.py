@@ -11,8 +11,7 @@ import plotly.graph_objects as go
 def app():
 
 
-    c1, c2 = st.beta_columns([2, 2])  #search bar and hist
-    c3, c4 = st.beta_columns([2, 2])  #search bar and hist
+#    c1, c2 = st.beta_columns([2, 2])  #search bar and hist
 
 #Page style
 
@@ -21,10 +20,9 @@ def app():
         unsafe_allow_html=True)
 
     #INPUT SEARCH BAR
-    with c1:
-        query = st.text_input("Search for a topic", 'Technology')
-        st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
-    
+    #with c1:
+    query = st.text_input("Search for a topic", 'Technology')
+    st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
     
 
     # Loadind todays date for Regulation calendar
@@ -109,49 +107,51 @@ def app():
     ### FEATURES ###
 
     # Graph volume regulations
+    #with c3:
+    st.title("Volume of regulations")
+
+    params = dict(q=query, limit=100000)
+    lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+    result = requests.get(lexai_url, params=params, headers=headers).json()
+    data_eurlex_df = pd.DataFrame(result["hits"])
+    data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(
+        x=data_eurlex_df['year/month'],
+    #    xbins=dict(start='2019-01-01', end='2021-06-01', size= 'M1'), # 1 month, 
+    #        autobinx = False,
+    #        name='control',  # name used in legend and hover labels,
+        marker_color='#6082FD',
+        opacity=0.90,
+        xbins_size=1
+    ))
+    fig.update_layout(
+    #    xaxis_type='date',
+        xaxis_title_text='Month', # xaxis label
+        xaxis_title_font_family='Helvetica',
+        xaxis_title_font_color='#731F7D',
+        xaxis_tickfont_family='Helvetica',
+        xaxis_tickfont_color='#731F7D',
+        xaxis_categoryorder='category ascending',
+        yaxis_title_text='Number of regulations', # yaxis label
+        yaxis_title_font_family='Helvetica',
+        yaxis_title_font_color='#731F7D',
+        yaxis_tickfont_family='Helvetica',
+        yaxis_tickfont_color='#731F7D',
+        yaxis_showgrid=True,
+        bargap=0.1, # gap between bars of adjacent location coordinates
+        autosize=False,
+        width=1600,
+        height=500,
+        plot_bgcolor='rgba(96, 130, 253,0.06)',
+    )
+    st.plotly_chart(fig)
+
+    c2, c4 = st.beta_columns([2, 2])  #search bar and hist
+
+#Regulation Box
+
     with c2:
-        
-        params = dict(q=query, limit=100000)
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
-        result = requests.get(lexai_url, params=params, headers=headers).json()
-        data_eurlex_df = pd.DataFrame(result["hits"])
-        data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
-        fig = go.Figure()
-        fig.add_trace(go.Histogram(
-            x=data_eurlex_df['year/month'],
-        #    xbins=dict(start='2019-01-01', end='2021-06-01', size= 'M1'), # 1 month, 
-        #        autobinx = False,
-        #        name='control',  # name used in legend and hover labels,
-            marker_color='#6082FD',
-            opacity=0.90,
-            xbins_size=1
-        ))
-        fig.update_layout(
-        #    xaxis_type='date',
-            xaxis_title_text='Month', # xaxis label
-            xaxis_title_font_family='Courier New',
-            xaxis_title_font_color='#731F7D',
-            xaxis_tickfont_family='Courier New',
-            xaxis_tickfont_color='#731F7D',
-            xaxis_categoryorder='category ascending',
-            yaxis_title_text='Number of regulations', # yaxis label
-            yaxis_title_font_family='Courier New',
-            yaxis_title_font_color='#731F7D',
-            yaxis_tickfont_family='Courier New',
-            yaxis_tickfont_color='#731F7D',
-            yaxis_showgrid=True,
-            bargap=0.1, # gap between bars of adjacent location coordinates
-            autosize=False,
-            width=800,
-            height=500,
-            plot_bgcolor='rgba(96, 130, 253,0.06)',
-        )
-        st.plotly_chart(fig)
-
-
-    #Regulation Box
-
-    with c3:
         '''
         ## Regulations
         '''
