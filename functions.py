@@ -134,7 +134,7 @@ def count_countries(tweets):
     
     return df_country_counts
  
-    
+   
 def add_radius(df):
     df["radius"] = df["retweets"].apply(lambda retweets: math.sqrt(retweets)*2000 + 20000)
     return df
@@ -220,3 +220,25 @@ def refine_countries(data_dict):
     df_countries = add_radius(df_countries)
     df_countries = sent_colors(df_countries)
     return df_countries
+
+def refine_pol_press(data_dict):
+
+    #this function concludes the steps of summing the tweet counts, likes etc. 
+    #by city in a dataframe and assign them to a latitude and longitude
+    #to display the data on a geographical map
+    
+    df = pd.DataFrame(data_dict)
+
+    df = df[['retweet_count', 'favorite_count', 'compound_score', 'country']]
+    df = df.rename(columns={"retweet_count": "retweets", "favorite_count": "likes", "compound_score": "sentiment"})
+    df['tweets'] = 1
+    df = clean_and_sum(df, 'country')
+
+    df_countries_loc = pd.read_csv('country_loc.csv')
+
+    
+    df = df.merge(df_countries_loc, how='left', on='country')
+    df = df.dropna()
+    df = add_radius(df)
+    df = sent_colors(df)
+    return df

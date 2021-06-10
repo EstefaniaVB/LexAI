@@ -1,3 +1,5 @@
+from matplotlib import pyplot as plt
+from matplotlib import colors 
 import streamlit.components.v1 as components
 import requests
 import matplotlib.pyplot as plt
@@ -10,6 +12,7 @@ import pandas as pd
 import functions as fc
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+
 
 def app():
     #Page style
@@ -67,7 +70,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -91,7 +94,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -104,11 +107,10 @@ def app():
 
     c1, c6 = st.beta_columns([2, 2])  #search bar and hist
     c2, c3= st.beta_columns([2, 2])  #search bar and hist
-    #c7 = st.beta_columns([4])
 
     #INPUT SEARCH BAR
     with c1:
-
+        st.title("Sentiment analysis")
 
         # Sentiment pie-charts
         #All data
@@ -117,7 +119,7 @@ def app():
         news_df = pd.DataFrame(news['hits'])
         all_tweets_df = pd.concat([query_df, politicians_df, news_df])
 
-        colors = ['#11E7FB', '#6082FD', '#731F7D']
+        colors_pie = ['#11E7FB', '#6082FD', '#731F7D']
 
         labels = ["Positive", "Neutral", "Negative"]
 
@@ -137,12 +139,14 @@ def app():
                                 'type': 'domain'
                             }]])
         fig.add_trace(
-            go.Pie(labels=labels,
+            go.Pie(title='Twitter',
+                   labels=labels,
                    values=values_all,
                    direction='clockwise',
                    sort=False), 1, 1)
         fig.add_trace(
-            go.Pie(labels=labels,
+            go.Pie(title=query,
+                labels=labels,
                    values=values_query,
                    direction='clockwise',
                    sort=False), 1, 2)
@@ -151,18 +155,18 @@ def app():
         fig.update_traces(hole=.4,
                           hoverinfo="label+percent",
                           textfont_size=15,
-                          marker=dict(colors=colors))
+                          marker=dict(colors=colors_pie))
 
         fig.update_layout(
             # Add annotations in the center of the donut pies.
             annotations=[
-                dict(text='Twitter',
+                dict(text='',
                      x=0.18,
                      y=0.5,
                      font_size=18,
                      font_color='#731F7D',
                      showarrow=False),
-                dict(text=query,
+                dict(text="",
                      x=0.82,
                      y=0.5,
                      font_size=18,
@@ -170,10 +174,6 @@ def app():
                      showarrow=False)
             ])
         st.plotly_chart(fig)
-
-
-
-
 
     ### FEATURES ###
     #Industry news
@@ -206,49 +206,6 @@ def app():
                 list_of_tweets.append(
                     components.html(html_tweet[e], scrolling=True))
 
-
-# fig, ax1 = plt.subplots(figsize=(10, 5))
-# plt.figure(figsize=(10, 5))
-
-# def label_function(val):
-#     return f'{val:.0f}%'
-
-
-# st.title('Twitter sentiment')
-# '''
-# ## Twitter sentiment
-# '''
-
-# fig, ax1 = plt.subplots(figsize=(10, 5))
-# plt.figure(figsize=(10, 5))
-# data_df = pd.DataFrame(full_data_general['hits'])
-# data_df.groupby('sentiment').size().plot(
-#     kind='pie',
-#     colors=['tomato', 'lightgrey', '#b5eb9a'],
-#     autopct=label_function,
-#     ax=ax1)
-# #    ax1.set_ylabel('All tweets', size=22)
-# st.write(fig)
-
-#with c5:
-# st.title('On Topic sentiment')
-
-# '''
-# ## On Topic sentiment
-# '''
-
-# fig, ax2 = plt.subplots(figsize=(10, 5))
-# plt.figure(figsize=(10, 5))
-# topic_df = pd.DataFrame(query_data_general['hits'])
-
-# topic_df.groupby('sentiment').size().plot(
-#     kind='pie',
-#     colors=['tomato', 'lightgrey', '#b5eb9a'],
-#     autopct=label_function,
-#     ax=ax2)
-# #    ax2.set_ylabel('On topic', size=22)
-# st.write(fig)
-
 # cloud of words
     with c6:
         st.title('Trending topics')
@@ -256,6 +213,7 @@ def app():
         '''
         ## Trending topics
         '''
+        cmap = colors.ListedColormap(["#731F7D","#6082FD", "#11E7FB"])
         general_df = pd.DataFrame(query_data_general["hits"])
         news_df = pd.DataFrame(news["hits"])
         politicians_df = pd.DataFrame(politicians["hits"])
@@ -288,7 +246,7 @@ def app():
         # Import package
         STOPWORDS.add(query)
         # Generate word cloud
-        wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
+        wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap=cmap, mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
         # Plot
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
@@ -300,24 +258,30 @@ def app():
     #with c7:
 
     option = st.selectbox(
-        'Which tweets source do you want?',
-        ('twitter_query', 'twitter_politicians', 'twitter_press')
+     'Which tweets source do you want?',
+     ("General Public", "Politicians", "Press")
+     
+     )
 
-        )
-
-    if option == 'twitter_query':
+    if option == 'General Public':
         option2 = st.selectbox(
         'Which region-type do you want?',
         ('City', 'Country')
-
+        
         )
-
-    source = option     #sources: twitter_query, twitter_politicians, twitter_press
+    if option == "General Public":
+        source = "twitter_query"
+    if option == "Politicians":
+        source = "twitter_politicians"
+    if option == "Press":
+        source = "twitter_press"
+        
+    #sources: twitter_query, twitter_politicians, twitter_press
 
     ####### api retrieve #######
 
     data_dict = fc.get_tweets(query,source)
-
+    
     ####### refining the dataframes #######
 
     if source == 'twitter_query':
@@ -328,18 +292,14 @@ def app():
 
 
     else:
-        map_data = fc.refine_countries(data_dict)
+        map_data = fc.refine_pol_press(data_dict)
 
 
 
     ######streamlit part#####
 
 
-    st.title(f'source: {source}')
-
-
-    st.write('You selected:', option)
-
+    st.title(f'Source: {option}')
 
     map_tweets_loc = map_data
 
@@ -353,7 +313,7 @@ def app():
             "<b>Retweets:</b> {retweets} <br/>"
             "<b>Likes:</b> {likes} <br/>"
             "<b>Sentiment (per tweet):</b> {sentiment} <br/>",
-
+        
         "style": {
             "backgroundColor": "white",
             "color": "grey",
@@ -367,12 +327,13 @@ def app():
             "<b>Retweets:</b> {retweets} <br/>"
             "<b>Likes:</b> {likes} <br/>"
             "<b>Sentiment score:</b> {sentiment} <br/>",
-
+        
         "style": {
             "backgroundColor": "white",
             "color": "grey",
         }
     }
+
 
     if source == 'twitter_query':
         if option2 == 'City':
@@ -402,3 +363,4 @@ def app():
         ),
         ],
     ))
+    st.image('legend.jpg', width=150)
