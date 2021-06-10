@@ -6,6 +6,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import plotly.graph_objects as go
+from bokeh.models.widgets import Div
 
 
 def app():
@@ -25,14 +26,8 @@ def app():
         #INPUT SEARCH BAR
         query = st.text_input("Search for a topic", 'Technology')
         st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
-        st.write('About LexAI:')
-        st.write('')
-        st.write('LexAI helps you keep track of EU regulations and social media sentiment on any given topic.')
-        st.write('')
-        st.write('Enter a keyword in the search bar to see the latest regulations on your topic. ')
-        st.write('')
-        st.write('Follow the links to learn more and give your opinion on future regulations thanks to the consultations feature')
-
+        html_intro = '<p><strong><span style="font-family: Helvetica;">About LexAI:</span></strong></p><p style="line-height: 1.5; text-align: justify;"><span style="font-family: Helvetica;">LexAI helps you keep track of EU regulations and political, media and social media attention on any given topic.</span></p><p style="line-height: 1.5; text-align: justify;"><span style="font-family: Helvetica;">Enter a keyword in the search bar to see the latest regulations on your topic of interest.</span></p><p style="line-height: 1.5; text-align: justify;"><span style="font-family: Helvetica;">Follow the links for more details as well as to give your opinion on future regulations thanks to our consultations feature.</span></p><p><br></p>'
+        st.markdown(html_intro, unsafe_allow_html=True)
 
 
 
@@ -47,7 +42,7 @@ def app():
     params = dict(q=query)
     tweet_params = dict(q=query,
                         filters=f"timestamp > {limit_time}",
-                        limit=20000)
+                        limit=100000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
 
@@ -66,9 +61,6 @@ def app():
 
     #Data from General
     lexai_url_general = f"http://35.223.18.2/indexes/twitter_query/search/"
-    full_data_general = requests.get(lexai_url_general,
-                                     params=tweet_params_without_query,
-                                     headers=headers).json()
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
@@ -182,7 +174,12 @@ def app():
                     st.write('Title: ', i["title"])
                     st.write('Author: ', i["author"])
                     st.write('Date: ', i["date"])
-                    st.write('Link: ', i["link"])
+                    if st.button('Link', key=i):
+                        js = f"window.open('{i['link']}')"
+                        html = '<img src onerror="{}">'.format(js)
+                        div = Div(text=html)
+                        st.bokeh_chart(div)
+                    st.write('-----')
 
     #Deadlines Box
     with c4:
@@ -191,9 +188,9 @@ def app():
         '''
         st.title("Consultations")
 
-        checkbox_val_1 = st.checkbox("Open")
-        checkbox_val_2 = st.checkbox("Closed")
-        checkbox_val_3 = st.checkbox("Upcoming")
+        checkbox_val_1 = st.checkbox("Open", value=True)
+        checkbox_val_2 = st.checkbox("Upcoming", value=True)
+        checkbox_val_3 = st.checkbox("Closed")
         checkbox_val_4 = st.checkbox("Disabled")
         checkbox_val_5 = st.checkbox("Other")
 
@@ -210,15 +207,8 @@ def app():
                         st.write('Type of act: ', i["type_of_act"])
                         st.write('End date: ', i["end_date"])
                         st.write('Link: ', i["link"])
+                        st.write('-----')
                 if checkbox_val_2:
-                    if i["status"] == "CLOSED":
-                        st.write('Title: ', i["title"])
-                        st.write('Status: ', i["status"])
-                        st.write('Topic: ', i["topics"])
-                        st.write('Type of act: ', i["type_of_act"])
-                        st.write('End date: ', i["end_date"])
-                        st.write('Link: ', i["link"])
-                if checkbox_val_3:
                     if i["status"] == "UPCOMING":
                         st.write('Title: ', i["title"])
                         st.write('Status: ', i["status"])
@@ -226,6 +216,16 @@ def app():
                         st.write('Type of act: ', i["type_of_act"])
                         st.write('End date: ', i["end_date"])
                         st.write('Link: ', i["link"])
+                        st.write('-----')
+                if checkbox_val_3:
+                    if i["status"] == "CLOSED":
+                        st.write('Title: ', i["title"])
+                        st.write('Status: ', i["status"])
+                        st.write('Topic: ', i["topics"])
+                        st.write('Type of act: ', i["type_of_act"])
+                        st.write('End date: ', i["end_date"])
+                        st.write('Link: ', i["link"])
+                        st.write('-----')
                 if checkbox_val_4:
                     if i["status"] == "DISABLE":
                         st.write('Title: ', i["title"])
@@ -234,6 +234,7 @@ def app():
                         st.write('Type of act: ', i["type_of_act"])
                         st.write('End date: ', i["end_date"])
                         st.write('Link: ', i["link"])
+                        st.write('-----')
                 if checkbox_val_5:
                     if i["status"] == "OTHER":
                         st.write('Title: ', i["title"])
@@ -242,5 +243,6 @@ def app():
                         st.write('Type of act: ', i["type_of_act"])
                         st.write('End date: ', i["end_date"])
                         st.write('Link: ', i["link"])
+                        st.write('-----')
                 else:
                     print("Click something")
