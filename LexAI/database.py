@@ -448,6 +448,7 @@ class Database(TwitterSearch, Analyse):
                 entry = {}
                 entry['id'] = id
                 entry['name'] = df[df['twitter'] == user]['media'].iloc[0]
+                entry['country'] = df[df['twitter'] == user]['country'].iloc[0]
                 
                 documents.append(entry)
         else:
