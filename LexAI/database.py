@@ -24,27 +24,37 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Database(TwitterSearch, Analyse):
     
-    def __init__(self, url='http://35.223.18.2', key=None,
-                 indices=['eurlex', 'consultations', 'twitter_query', 
-                          'twitter_press', 'twitter_politicians'],
-                 trans=False):
+    def __init__(self, url='http://35.223.18.2', key=None, trans=True,
+                 indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians']):
 
         if key is None:
             key = os.getenv('MEILISEARCH_KEY')
         
-        super().__init__('PROJECT_E')
+        super().__init__('PROJECT_T', trans)
         super().__init__(url, key)
+        project_id = os.getenv('PROJECT_E')  # change to your project ID env key
+        self.parent = f"projects/{project_id}"
+        
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
+<<<<<<< HEAD
         '''
+=======
+        """ # NOT WORKING
+>>>>>>> 094c8f50a15caa69d1a5523513fd0bd2ecd93ec2
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
             if index not in ms_indices:
                 self.client.create_index(index, {'primaryKey': 'id'})
                 print(f'Created index: {index}')
+<<<<<<< HEAD
         '''
+=======
+        """
+        
+>>>>>>> 094c8f50a15caa69d1a5523513fd0bd2ecd93ec2
         self.client.index('eurlex').update_settings({
             'searchableAttributes': ['title', 'author', 'date', 'timestamp'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
@@ -197,40 +207,37 @@ class Database(TwitterSearch, Analyse):
     def build_ms(self, query, pages=10, index='eurlex', **params):
         db = self.client.index(index)
         start_len = db.get_stats()['numberOfDocuments']
-        results = []
+        documents = []
         
         start_t = int(datetime.now().strftime("%s"))
         end_t = start_t
         
-        while len(results) == 0 and end_t - start_t < 20*60:
+        while len(documents) == 0 and end_t - start_t < 20*60:
             if 'twitter' in index:
                 if 'query' in index:
-                    results = self.search_query(query, count=pages, **params)
+                    documents = self.search_query(query, count=pages, **params)
                 else:
-                    results = self.search_username(query, count=pages)
+                    documents = self.search_username(query, count=pages)
                 
-                if len(results) == 0:
+                if len(documents) == 0:
                     print(datetime.now().strftime("%H:%M:%S:"),
                           'Twitter API limit reached. Retrying in 60s',
                           f'(Attempt {(end_t - start_t)//60}/20)')
                     sleep(60)
                     end_t = int(datetime.now().strftime("%s"))
                     continue
-                
-                results
             else:
-                results = self.search_many(query, pages, index, **params)
+                documents = self.search_many(query, pages, index, **params)
 
-            update_id = db.add_documents(results)['updateId']
+            update_id = db.add_documents(documents)['updateId']
             
             while db.get_update_status(update_id)['status'] != 'processed':
                 sleep(0.1)
             end_len = db.get_stats()['numberOfDocuments']
         
-        return f"Found {len(results)} results. Added {end_len - start_len} new entries to {index} index"
+        return f"Found {len(documents)} results. Added {end_len - start_len} new entries to {index} index"
 
-    def build_ms_many(self, queries='default', pages=50, indices=None, rebuild=0,
-                      **params):
+    def build_ms_many(self, queries='default', pages=50, indices=None, rebuild=0, **params):
         if queries == 'default':
             queries = [
                 'agriculture',
@@ -251,7 +258,6 @@ class Database(TwitterSearch, Analyse):
             ]
         elif not isinstance(queries, list):
             queries = queries.split(',')
-        print(indices)
         pages = int(pages)
         
         if indices is None:
@@ -287,17 +293,11 @@ class Database(TwitterSearch, Analyse):
             end_len = db.get_stats()['numberOfDocuments']
             idx_result = f"Total: {end_len - start_len} new entries added to {index} index\n"
             
-            if 'twitter_' in index:
-                print(f'Getting sentiments for {index}')
-                documents = self.get_sentiments(index)
-                print(f'\nFound sentiments for {len(documents)} entries. Adding...', end='')
-                db.update_documents(documents)
-                print(f'Done.')
-            
             self.log[index]['complete'] = idx_result
             print(idx_result)
-            
-        self.get_synonyms()
+        
+        if rebuild:
+            self.get_synonyms()
         
         return self.log
 
@@ -306,6 +306,23 @@ class Database(TwitterSearch, Analyse):
             return [{"Error": "index not recognised"}]
         else:
             return self.client.index(index).search(query, {'limit': n})['hits']
+    
+    def check_folder(self, folder):
+        folder = join(dirname(dirname(__file__)), folder)
+        if not exists(folder):  # if folder doesn't exist
+            os.makedirs(folder)  # create folder
+        return folder
+        
+    def get_info(self, folder, indices=None):
+        folder = self.check_folder(folder)
+        files = os.listdir(folder)
+        if indices is None:
+            indices = [file.replace('.json', '') for file in files]
+        else:
+            indices = [file.replace('.json', '') for file in files 
+                       if file.replace('.json', '') in indices]
+        
+        return folder, files, indices
         
     def export_json(self, indices=None):
         if indices is None:
@@ -313,20 +330,14 @@ class Database(TwitterSearch, Analyse):
         elif not isinstance(indices, list):
             indices = indices.split(',')
         
-        folder = join(dirname(dirname(__file__)), 'data.json')
-        if not exists(folder):  # if folder doesn't exist
-            os.makedirs(folder)  # create folder
+        folder = self.check_folder('data.json')
         
-        for index in indices:
-            if index.lower().strip() =='synonyms':
-                continue
-            
+        for index in indices:          
             print(f'\nProcessing {index}')
             size = self.client.index(index).get_stats().get('numberOfDocuments', 0)
             export = self.client.index(index).get_documents({'limit':size})
             
             filepath = join(folder, f'{index}.json')
-            
             with open(filepath, 'w') as file:
                 json.dump(export, file)
             print(f'Exported {size} entries from {index} to data.json/{index}.json')
@@ -342,25 +353,13 @@ class Database(TwitterSearch, Analyse):
         print('\nSaved synonyms to update.json/synonyms.json')
     
     def import_json(self, indices=None, replace=False):
-        folder = join(dirname(dirname(__file__)), 'data.json')
-        if not exists(folder):  # if folder doesn't exist
-            print('Folder not found.')
-            return
-        
-        files = os.listdir(folder)
-        if indices is None:
-            indices = [file.replace('.json', '') for file in files]
-        else:
-            indices = [file.replace('.json', '') for file in files 
-                       if file.replace('.json', '') in indices]
-        
+        folder, files, indices = self.get_info('data.json')
         if len(files) == 0:  # if no files
             print('No files found.')
             return
         
         for index, filename in zip(indices, files):
-            filepath = join(folder, filename)
-            with open(filepath, 'r') as file:
+            with open(join(folder, filename), 'r') as file:
                 documents = json.load(file)
  
             try:
@@ -390,19 +389,15 @@ class Database(TwitterSearch, Analyse):
             print(f'Imported {end_len - start_len} entries to {index}')
     
     def import_updates(self, replace=False):
-        folder = join(dirname(dirname(__file__)), 'update.json')
-        if not exists(folder):  # if folder doesn't exist
-            print('Folder not found.')
-            return
-        
-        files = os.listdir(folder)
-        indices = [file.replace('.json', '').replace('_sentiment', '') for file in files]
-        
+        folder, files, indices = self.get_info('update.json')
         if len(files) == 0:  # if no files
-            print('No files found.')    
+            print('No files found.')
             return
         
         for index, filename in zip(indices, files):
+            with open(join(folder, filename), 'r') as file:
+                documents = list(json.load(file).values())
+            
             if index == 'synonyms':
                 for idx in set(indices) - set(['synonym']):
                     if replace:
@@ -416,10 +411,6 @@ class Database(TwitterSearch, Analyse):
                 print(f'\nERROR: Index {index} not found in database. Skipping {index}.\n')
                 continue
             
-            filepath = join(folder, filename)
-            with open(filepath, 'r') as file:
-                documents = list(json.load(file).values())
-                
             print(f'\n{filename} contains {len(documents)} entries. Updating...', end='')
             self.client.index(index).update_documents(documents)
             print(f'Done.')
