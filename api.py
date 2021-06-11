@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+<<<<<<< HEAD
 from LexAI.dbsearch import Search
+=======
+from LexAI.database import Search
+>>>>>>> acf71e625ea996ed9a2620d870a351d3cfbb76cd
 
 #from predictions import get_prediction
 #from consultations import get_consultation
@@ -23,7 +27,10 @@ search = Search()  # meilisearch searcher/builder
 def index():
     return {"greeting": "Hello Estefania"}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> acf71e625ea996ed9a2620d870a351d3cfbb76cd
 @app.get("/query")
 def query(query, index='eurlex', n=20):
     results = search.query_ms(query, index, int(n))

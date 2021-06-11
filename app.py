@@ -40,8 +40,9 @@ st.markdown('<style>h2{color: #731F7D;font-family: Arial, Helvetica, sans-serif;
 
 
 c7, c8, c9 = st.beta_columns((2,1,1))
-c1, c2 = st.beta_columns((2,2))
 c3, c4, c5, c6= st.beta_columns((1,1,1,1))
+c1, c2 = st.beta_columns((2,2))
+
 
 with c7:
     #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')

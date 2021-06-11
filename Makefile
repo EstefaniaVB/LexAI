@@ -28,7 +28,7 @@ clean:
 
 install:
 	@pip install . -U
-	@pip3 install meilisearch
+	@pip install -r requirements.txt
 	@curl -L https://install.meilisearch.com | sh
 
 all: clean install test black check_code
@@ -57,6 +57,38 @@ pypi_test:
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
+
+# ----------------------------------
+#      Manage DB
+# ----------------------------------
+add_tweets_pp:
+	@python LexAI/database.py build_ms_many indices=twitter_press,twitter_politicians
+	@python LexAI/database.py export_json indices=twitter_press,twitter_politicians
+
+add_tweet_query:
+	@python LexAI/database.py build_ms_many indices=twitter_query
+	@python LexAI/database.py export_json indices=twitter_query
+
+add_regulations:
+	@python LexAI/database.py build_ms_many indices=eurlex,consultations
+	@python LexAI/database.py export_json indices=eurlex,consultations
+
+add_all:
+	@python LexAI/database.py build_ms_many
+
+export_json:
+	@python LexAI/database.py export_json
+
+import_json:
+	@python LexAI/database.py import_json
+
+import_json_replace:
+	@python LexAI/database.py import_json replace=True
+
+update_entries:
+	@python LexAI/database.py import_updates
+	@python LexAI/database.py import_data index=twitter_politicians
+	@python LexAI/database.py import_data index=twitter_press
 
 # ----------------------------------
 #      API
