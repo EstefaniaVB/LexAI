@@ -38,23 +38,16 @@ class Database(TwitterSearch, Analyse):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
-<<<<<<< HEAD
-        '''
-=======
-        """ # NOT WORKING
->>>>>>> 094c8f50a15caa69d1a5523513fd0bd2ecd93ec2
+        
+        """  # NOTWORKING
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
             if index not in ms_indices:
                 self.client.create_index(index, {'primaryKey': 'id'})
                 print(f'Created index: {index}')
-<<<<<<< HEAD
-        '''
-=======
         """
         
->>>>>>> 094c8f50a15caa69d1a5523513fd0bd2ecd93ec2
         self.client.index('eurlex').update_settings({
             'searchableAttributes': ['title', 'author', 'date', 'timestamp'],
             'rankingRules': ['typo', 'words', 'proximity', 'attribute', 
@@ -237,7 +230,7 @@ class Database(TwitterSearch, Analyse):
         
         return f"Found {len(documents)} results. Added {end_len - start_len} new entries to {index} index"
 
-    def build_ms_many(self, queries='default', pages=50, indices=None, rebuild=0, **params):
+    def build_ms_many(self, queries='default', pages=25, indices=None, rebuild=0, **params):
         if queries == 'default':
             queries = [
                 'agriculture',
@@ -254,7 +247,24 @@ class Database(TwitterSearch, Analyse):
                 'conservation',
                 'environment',
                 'politics',
-                'tax'
+                'tax',
+                'economy',
+                'consumers',
+                'defence',
+                'military',
+                'customs',
+                'business',
+                'covid',
+                'borders',
+                'food',
+                'justice'
+                'migration',
+                'health',
+                'research',
+                'single market',
+                'sport',
+                'trade',
+                'transport'                
             ]
         elif not isinstance(queries, list):
             queries = queries.split(',')
