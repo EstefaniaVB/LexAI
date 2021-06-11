@@ -1,59 +1,59 @@
-media,twitter
-BBC News ,BBCNews
-Guardian,guardian
-ORF News,ORFBreakingNews
-Krone Zeitung,krone_at
-Het Laatste Nieuws,HLN
-Nova TV News,novatv_bg
-BTV News,btv_official
-24sata,24sata_HR
-Jutarnji,Jutarnji
-Seznam Zpravy,SeznamZpravy
-iDNEScz,iDNEScz
-DR News,DRNyheder
-TV 2 News,tv2newsdk
-Ilta-Sanomat,iltasanomat
-Iltalehti,iltalehti_fi
-20 Minutes,20Minutes
-Le Monde,lemondefr
-Der Spiegel,derspiegel
-ARD Online News,ARD_Presse
-Newsbomb,newsbombgr
-Dikaiologitika,dikaiologitika
-Index Hu,indexhu
-Origo Hu,Origo_hu
-RTÉ News,rtenews
-The Journal,thejournal_ie
-TGCom24,MediasetTgcom24
-SkyTG24,SkyTG24
-NU NL,NUnl
-Algemeen Dagblad,ADnl
-Onet,onetpl
-Wirtualna (WP),wirtualnapolska
-Notícias ao Minuto,noticiaaominuto
-SAPO,sapo
-Pro TV,ProTVro
-Ziare,Ziare_com
-Aktuality,Aktualitysk
-Topsky,TopkySK
-El País,el_pais
-El Mundo,elmundoes
-Aftonbladet,Aftonbladet
-15 Min,15minlt
-Irytas,lrytas_lt
-Delfi,DelfiLV
-TVnet,TVNET_zina
-Äripäeva uudised,aripaev_ee
-Rahvusringhääling,err_ee
-Delo,Delo
-RTV Slovenija,RTV_Slovenija
-Cyprus Mail,cyprusmail
-Εφημερίδα Πολίτης - Politis.com.cy,politis_news
-Luxemburger Wort,Wort_LU
-RTL Luxembourg,RTLlu
-Times ,TheTimesofMalta
-The Malta Independent,IndependentMlt
-EURACTIV,EURACTIV
-euronews,euronews
-EUObserver,euobs
-POLITICOEurope,POLITICOEurope
+media,twitter,country
+BBC News ,BBCNews,United Kingdom
+Guardian,guardian,United Kingdom
+ORF News,ORFBreakingNews,Austria
+Krone Zeitung,krone_at,Austria
+Het Laatste Nieuws,HLN,Belgium
+Nova TV News,novatv_bg,Bulgaria
+BTV News,btv_official,Bulgaria
+24sata,24sata_HR,Croatia
+Jutarnji,Jutarnji,Croatia
+Seznam Zpravy,SeznamZpravy,Czechia
+iDNEScz,iDNEScz,Czechia
+DR News,DRNyheder,Denmark
+TV 2 News,tv2newsdk,Denmark
+Ilta-Sanomat,iltasanomat,Finland
+Iltalehti,iltalehti_fi,Finland
+20 Minutes,20Minutes,France
+Le Monde,lemondefr,France
+Der Spiegel,derspiegel,Germany
+ARD Online News,ARD_Presse,Germany
+Newsbomb,newsbombgr,Greece
+Dikaiologitika,dikaiologitika,Greece
+Index Hu,indexhu,Hungary
+Origo Hu,Origo_hu,Hungary
+RTÉ News,rtenews,Ireland
+The Journal,thejournal_ie,Ireland
+TGCom24,MediasetTgcom24,Italy
+SkyTG24,SkyTG24,Italy
+NU NL,NUnl,Netherlands
+Algemeen Dagblad,ADnl,Netherlands
+Onet,onetpl,Poland
+Wirtualna (WP),wirtualnapolska,Poland
+Notícias ao Minuto,noticiaaominuto,Portugal
+SAPO,sapo,Portugal
+Pro TV,ProTVro,Romania
+Ziare,Ziare_com,Romania
+Aktuality,Aktualitysk,Slovakia
+Topsky,TopkySK,Slovakia
+El País,el_pais,Spain
+El Mundo,elmundoes,Spain
+Aftonbladet,Aftonbladet,Sweden
+15 Min,15minlt,Lithuania
+Irytas,lrytas_lt,Lithuania
+Delfi,DelfiLV,Latvia
+TVnet,TVNET_zina,Turkey
+Äripäeva uudised,aripaev_ee,Estonia
+Rahvusringhääling,err_ee,Estonia
+Delo,Delo,Slovenia
+RTV Slovenija,RTV_Slovenija,Slovenia
+Cyprus Mail,cyprusmail,Cyprus
+Εφημερίδα Πολίτης - Politis.com.cy,politis_news,Cyprus
+Luxemburger Wort,Wort_LU,Luxembourg
+RTL Luxembourg,RTLlu,Luxembourg
+Times ,TheTimesofMalta,Malta
+The Malta Independent,IndependentMlt,Malta
+EURACTIV,EURACTIV,Belgium
+euronews,euronews,Belgium
+EUObserver,euobs,Belgium
+POLITICOEurope,POLITICOEurope,Belgium

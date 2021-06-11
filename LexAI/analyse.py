@@ -137,7 +137,7 @@ class Analyse:
 
         # make dict of scores
         sentiments = {i : {'id': doc['id'], 
-                           'compound_score': sid.polarity_scores(doc['text_en'])} 
+                           'compound_score': sid.polarity_scores(doc['text_en'])['compound']}
                       for i, doc in data.items()}
 
         # add category

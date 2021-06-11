@@ -1,4 +1,5 @@
 import streamlit as st
+<<<<<<< HEAD
 import io
 from typing import List, Optional
 import streamlit.components.v1 as components
@@ -429,65 +430,20 @@ with c8:
                                             autopct=label_function, ax=ax1)
     #    ax1.set_ylabel('All tweets', size=22)
     st.write(fig)
+=======
+from multiapp import MultiApp
+from apps import home, data, model # import your app modules here
+>>>>>>> 02787331857be1284933f1bd63f98d838f612e69
 
-with c9:    
-    '''
-    ## On Topic sentiment
-    '''
-    
-    fig, ax2= plt.subplots(figsize=(10, 5))
-    plt.figure(figsize=(10,5))
-    topic_df=pd.DataFrame(query_data_general['hits'])
-    
-    topic_df.groupby('sentiment').size().plot(kind='pie',colors=['tomato', 'lightgrey', '#b5eb9a'], 
-                                        autopct=label_function, ax=ax2)
-#    ax2.set_ylabel('On topic', size=22)
-    st.write(fig)
-    
-with c2:
-    '''
-    ## Trending topics
-    '''
-    general_df = pd.DataFrame(query_data_general["hits"]) 
-    news_df = pd.DataFrame(news["hits"]) 
-    politicians_df = pd.DataFrame(politicians["hits"]) 
-    
-    hashtags=[]
-    for i in general_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in news_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-    for i in politicians_df['hashtags']:
-        if i !='':
-            for j in i.lower().split(', '):
-                hashtags.append(j)
-                    
-    text=' '.join(item for item in hashtags)
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+#components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
+st.image('Images/LexAI2.png', width=200)
+#st.subheader('Navigating public fora')
 
+app = MultiApp()
 
-    # Define a function to plot word cloud
-    def plot_cloud(wordcloud):
-        # Set figure size
-        plt.figure(figsize=(8, 16))
-        # Display image
-        plt.imshow(wordcloud) 
-        # No axis details
-        plt.axis("off");
-    # Import package
-    from wordcloud import WordCloud, STOPWORDS
-    STOPWORDS.add(query)
-    # Generate word cloud
-    wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
-    # Plot
-    
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    st.pyplot()
-    #plot = plot_cloud(wordcloud)
-    #st.write(plot)
+# Add all your application here
+app.add_app("Regulation", data.app)
+app.add_app("Social Media", model.app)
+# The main app
+app.run()
