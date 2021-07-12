@@ -1,5 +1,4 @@
 import streamlit as st
-<<<<<<< HEAD
 import io
 from typing import List, Optional
 import streamlit.components.v1 as components
@@ -430,10 +429,6 @@ with c8:
                                             autopct=label_function, ax=ax1)
     #    ax1.set_ylabel('All tweets', size=22)
     st.write(fig)
-=======
-from multiapp import MultiApp
-from apps import home, data, model # import your app modules here
->>>>>>> 02787331857be1284933f1bd63f98d838f612e69
 
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 #components.html('<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; padding-bottom: 48px; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">  <iframe style="position: absolute; width: 100%; height: 50%; top: 0; left: 0; border: none; padding: 0;margin: 0;"    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?embed">  </iframe></div><a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEfatHdF58&#x2F;view?utm_content=DAEfatHdF58&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">LexAI</a> de Estefanía Vidal Bouzón')
