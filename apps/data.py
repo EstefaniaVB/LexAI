@@ -100,10 +100,10 @@ def app():
                 status = i["status"]
             except:
                 status= ""
-            #try:
-            #    end_date = pd.to_datetime(i['end_date']).date()
-            #except:
-            end_date = pd.to_datetime(i['end_date'])
+            try:
+                end_date = pd.to_datetime(i['end_date'], errors='coerce').date()
+            except:
+                end_date = pd.to_datetime(i['end_date'], errors='coerce')
             link = i['link']
             consultations.append({
                 "title": title,
