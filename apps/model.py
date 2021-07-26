@@ -37,8 +37,8 @@ def app():
                         limit=20000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp < {limit_time}")
-
-    headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+    key = os.getenv('MEILISEARCH_KEY')
+    headers = {'X-Meili-API-Key': key}
 
     #Data from News
     lexai_url_news = "http://127.0.0.1:7700/indexes/twitter_press/search"

@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 from bokeh.models.widgets import Div
+import os
 
 
 def app():
@@ -50,8 +51,8 @@ def app():
                         limit=100000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
-
-    headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+    key = os.getenv('MEILISEARCH_KEY')
+    headers = {'X-Meili-API-Key': key}
 
     #Data from News
     lexai_url_news = "http://127.0.0.1:7700/indexes/twitter_press/search"
@@ -175,6 +176,7 @@ def app():
         start_date = pd.to_datetime(start_date).date()
         end_date = pd.to_datetime(end_date).date()
         regulation = get_regulation()
+        regulation.sort(key=lambda item:item['date'], reverse=True)
         expander = st.beta_expander("expand")
         with expander:
             for i in regulation:
