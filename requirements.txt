@@ -22,23 +22,12 @@ google-cloud-storage
 google-cloud-translate
 mlflow
 s3fs
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 uvicorn
 fastapi
->>>>>>> 02787331857be1284933f1bd63f98d838f612e69
 bs4
 twython==3.8.2
 requests==2.25.1
 
-<<<<<<< HEAD
-=======
-uvicorn
-fastapi
->>>>>>> acf71e625ea996ed9a2620d870a351d3cfbb76cd
-=======
->>>>>>> 02787331857be1284933f1bd63f98d838f612e69
 
 # utilities
 six>=1.14
@@ -69,3 +58,4 @@ geopy
 wordcloud
 
 multiapp
+bokeh

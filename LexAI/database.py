@@ -24,7 +24,7 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Database(TwitterSearch, Analyse):
     
-    def __init__(self, url='http://35.223.18.2', key=None, trans=True,
+    def __init__(self, url='http://127.0.0.1:7700', key=None, trans=True,
                  indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians']):
 
         if key is None:
@@ -38,8 +38,7 @@ class Database(TwitterSearch, Analyse):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
-        
-        """  # NOTWORKING
+        """ # NOT WORKING
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
 
         for index in indices:
@@ -230,7 +229,7 @@ class Database(TwitterSearch, Analyse):
         
         return f"Found {len(documents)} results. Added {end_len - start_len} new entries to {index} index"
 
-    def build_ms_many(self, queries='default', pages=25, indices=None, rebuild=0, **params):
+    def build_ms_many(self, queries='default', pages=50, indices=None, rebuild=0, **params):
         if queries == 'default':
             queries = [
                 'agriculture',
@@ -247,24 +246,7 @@ class Database(TwitterSearch, Analyse):
                 'conservation',
                 'environment',
                 'politics',
-                'tax',
-                'economy',
-                'consumers',
-                'defence',
-                'military',
-                'customs',
-                'business',
-                'covid',
-                'borders',
-                'food',
-                'justice'
-                'migration',
-                'health',
-                'research',
-                'single market',
-                'sport',
-                'trade',
-                'transport'                
+                'tax'
             ]
         elif not isinstance(queries, list):
             queries = queries.split(',')
