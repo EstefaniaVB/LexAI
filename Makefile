@@ -72,6 +72,8 @@ add_tweets_query:
 add_regulations:
 	@python LexAI/database.py build_ms_many indices=eurlex,consultations
 	@python LexAI/database.py export_json indices=eurlex,consultations
+update_consul_displayed_att:
+	@python LexAI/database.py update_consul_displayed_att
 
 add_all:
 	@python LexAI/database.py build_ms_many
@@ -114,4 +116,8 @@ heroku_create_app:
 deploy_heroku:
 	-@git push heroku master
 	-@heroku ps:scale web=1
-
+# ----------------------------------
+#         TESTS
+# ----------------------------------
+say_hello:
+	-@echo "Hello World"
