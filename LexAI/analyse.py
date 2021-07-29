@@ -153,14 +153,12 @@ class Analyse:
 
         # add category
         for k, v in sentiments.items():
-            if type(sentiments[k]['compound_score']) == type("NaN"):
-                sentiments[k]['sentiment'] = 'NaN'
-            elif sentiments[k]['compound_score'] <= -0.2:
+            if sentiments[k]['compound_score'] <= -0.2:
                 sentiments[k]['sentiment'] = 'negative'
             elif sentiments[k]['compound_score'] > 0.2:
                 sentiments[k]['sentiment'] = 'positive'
             else:
-                continue
+                sentiments[k]['sentiment'] = 'neutral'
             
         return sentiments
 
