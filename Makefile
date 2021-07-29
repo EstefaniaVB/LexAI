@@ -75,9 +75,8 @@ add_regulations:
 
 update_consul_displayed_att:
 	@python LexAI/database.py update_consul_displayed_att
-	
+
 update_sentiments:
-	@python LexAI/analyse.py get_sentiments
 	@python LexAI/analyse.py get_all_sentiments
 
 add_all:

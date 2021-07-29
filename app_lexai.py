@@ -20,6 +20,7 @@ import math
 import altair as alt
 import numpy as np
 import pandas as pd
+import os
 
 def app():
     #Dashboard Layout
@@ -58,7 +59,8 @@ def app():
     tweet_params=dict(q=query, filters= f"timestamp > {limit_time}", limit=20000)
     tweet_params_without_query = dict(q="", filters= f"timestamp > {limit_time}")
 
-    headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+    key = os.getenv('MEILISEARCH_KEY')
+    headers={'X-Meili-API-Key':key}
 
 
     #Data from News
