@@ -107,12 +107,14 @@ def app():
 
     c1, c6 = st.beta_columns([2, 2])  #search bar and hist
     c2, c3= st.beta_columns([2, 2])  #search bar and hist
-
+    
+    #unblock when sentiment analysis its fixed
     #INPUT SEARCH BAR
 
     with c1:
-        st.title("Sentiment analysis")
-
+        '''
+        st.title("Sentiment analysis under construction")
+        
         # Sentiment pie-charts
         #All data
         query_df = pd.DataFrame(query_data_general['hits'])
@@ -173,7 +175,7 @@ def app():
                      font_size=18,
                      font_color='#731F7D',
                      showarrow=False)], autosize=False, width=500, height=250, margin=dict(l=0,r=0,b=0,t=0,pad=1))
-        st.plotly_chart(fig)
+        st.plotly_chart(fig)'''
         
     ### FEATURES ###
     #Industry news
@@ -256,7 +258,9 @@ def app():
 
 
     #with c7:
-
+    
+    #map disabled because of sentiment analysis problems
+    '''
     option = st.selectbox(
      'Which tweets source do you want?',
      ("General Public", "Politicians", "Press")
@@ -364,3 +368,4 @@ def app():
         ],
     ))
     st.image('legend.jpg', width=150)
+'''
