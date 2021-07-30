@@ -47,7 +47,7 @@ def app():
     params = dict(q=query)
     tweet_params = dict(q=query,
                         filters=f"timestamp > {limit_time}",
-                        limit=100000)
+                        limit=10000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
 
