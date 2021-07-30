@@ -7,7 +7,6 @@ from datetime import datetime
 from os.path import dirname, exists, join
 from time import mktime, sleep
 from unicodedata import normalize
-
 import gensim.downloader as api
 import meilisearch
 import numpy as np
@@ -24,7 +23,7 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Database(TwitterSearch, Analyse):
     
-    def __init__(self, url='http://35.223.18.2', key=None, trans=True,
+    def __init__(self, url='http://127.0.0.1:7700', key=None, trans=True,
                  indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians']):
 
         if key is None:
@@ -38,10 +37,8 @@ class Database(TwitterSearch, Analyse):
         self.client = meilisearch.Client(url, key)
         self.indices = indices
         self.trans = trans
-        
-        """  # NOTWORKING
+        """ # NOT WORKING
         ms_indices = [idx.get('name', None) for idx in self.client.get_indexes()]
-
         for index in indices:
             if index not in ms_indices:
                 self.client.create_index(index, {'primaryKey': 'id'})
@@ -116,7 +113,6 @@ class Database(TwitterSearch, Analyse):
     
     def search_consultations(self, query, page=0, size=50, lang="EN"):
         url = "https://ec.europa.eu/info/law/better-regulation/brpapi/searchInitiatives"
-        
         params = {
             'text': query,
             'page': page,
@@ -171,14 +167,31 @@ class Database(TwitterSearch, Analyse):
                 entry['end_date'] = None
                 entry['end_timestamp'] = 0
 
-            
-            # links sometimes don't work, plz fix :)
             link_url = "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/"
             title_link = entry['title'].replace(" ","-")
             entry['link']= f"{link_url}{entry['id']}-{title_link}_en"
             
             final_results.append(entry)
         return final_results
+
+    #update the atributtes in consultation index to solve Status bug.  
+    def update_consul_displayed_att(self, url='http://127.0.0.1:7700', key=None):
+        if key is None:
+            key = os.getenv('MEILISEARCH_KEY')
+            
+        self.client = meilisearch.Client(url, key)
+        self.client.index('consultations').update_displayed_attributes([
+            "title",
+            "topics",
+            "type_of_act",
+            "status",
+            "start_date",
+            "start_timestamp",
+            "end_date",
+            "end_timestamp",
+            "link"
+            ])
+        self.log = {}
 
     def search_many(self, query, pages=10, index='eurlex', **params):
         results = []
@@ -480,4 +493,3 @@ if __name__ == '__main__':
         getattr(Database(), sys.argv[1])(**kwargs)
     elif len(sys.argv) == 2:
         getattr(Database(), sys.argv[1])()
-

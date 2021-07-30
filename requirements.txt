@@ -58,3 +58,4 @@ geopy
 wordcloud
 
 multiapp
+bokeh
