@@ -18,7 +18,7 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Analyse:
     
-    def __init__(self, url='http://35.223.18.2', key=None):
+    def __init__(self, url='http://127.0.0.1:7700', key=None):
         
         if key is None:
             key = os.getenv('MEILISEARCH_KEY')

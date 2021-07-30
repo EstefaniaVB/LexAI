@@ -54,24 +54,24 @@ def app():
     headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
 
     #Data from News
-    lexai_url_news = "http://35.223.18.2/indexes/twitter_press/search"
+    lexai_url_news = "http://127.0.0.1:7700/indexes/twitter_press/search"
     news = requests.get(lexai_url_news, params=tweet_params,
                         headers=headers).json()
 
     #Data from Politicians
-    lexai_url_politicians = "http://35.223.18.2/indexes/twitter_politicians/search"
+    lexai_url_politicians = "http://127.0.0.1:7700/indexes/twitter_politicians/search"
     politicians = requests.get(lexai_url_politicians,
                                params=tweet_params,
                                headers=headers).json()
 
     #Data from General
-    lexai_url_general = f"http://35.223.18.2/indexes/twitter_query/search/"
+    lexai_url_general = f"http://127.0.0.1:7700/indexes/twitter_query/search/"
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
 
     def get_regulation():
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        lexai_url = "http://127.0.0.1:7700/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         reg = []
         for i in result["hits"]:
@@ -89,7 +89,7 @@ def app():
         return reg
 
     def get_consultations():
-        lexai_url = "http://35.223.18.2/indexes/consultations/search"
+        lexai_url = "http://127.0.0.1:7700/indexes/consultations/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         consultations = []
         for i in result["hits"]:
@@ -118,7 +118,7 @@ def app():
     # Graph volume regulations
     with c2:
         params = dict(q=query, limit=100000)
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        lexai_url = "http://127.0.0.1:7700/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         data_eurlex_df = pd.DataFrame(result["hits"])
         data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
