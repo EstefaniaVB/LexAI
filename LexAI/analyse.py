@@ -24,7 +24,7 @@ class Analyse:
             #key = os.getenv('MEILI_MASTER_KEY')
             key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         self.client = meilisearch.Client(url, key)
-        url="http://localhost:7700/indexes"
+        #url="http://localhost:7700/indexes"
         #key = os.getenv('MEILI_MASTER_KEY')
         key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         headers = {'X-Meili-API-Key': key}
