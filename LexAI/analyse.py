@@ -1,9 +1,9 @@
+import requests
 import json
 import os
 import sys
 from collections import Counter
 from os.path import dirname, exists, join
-
 import gensim.downloader as api
 import meilisearch
 import nltk
@@ -18,13 +18,18 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Analyse:
     
-    def __init__(self, url='http://35.223.18.2', key=None):
+    def __init__(self, url='http://35.225.139.215', key=None):
         
         if key is None:
-            key = os.getenv('MEILISEARCH_KEY')
-        
+            #key = os.getenv('MEILI_MASTER_KEY')
+            key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         self.client = meilisearch.Client(url, key)
-        self.indices = [idx.get('name', None) for idx in self.client.get_indexes()]
+        #url="http://localhost:7700/indexes"
+        #key = os.getenv('MEILI_MASTER_KEY')
+        key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
+        headers = {'X-Meili-API-Key': key}
+        self.result = requests.get(url, headers=headers).json()
+        self.indices = [idx.get('name', None) for idx in self.result]
         
     @staticmethod
     def get_words():
@@ -109,12 +114,12 @@ class Analyse:
         return synonyms
     
     def get_all_sentiments(self):
-        folder = dirname(dirname(__file__))
+        folder = os.getcwd()
         if not exists(folder):  # if folder doesn't exist
             print('Folder not found.')
             return
         
-        files = os.listdir(folder)
+        files = os.listdir(os.getcwd()+"/data.json")
         indices = [file.replace('.json', '') for file in files]
         
         if len(files) == 0:  # if no files
@@ -136,9 +141,16 @@ class Analyse:
         sid = SentimentIntensityAnalyzer()
 
         # make dict of scores
-        sentiments = {i : {'id': doc['id'], 
-                           'compound_score': sid.polarity_scores(doc['text_en'])['compound']}
-                      for i, doc in data.items()}
+        sentiments={}
+
+        for n,i in enumerate(data):
+            try :
+                sentiments[n]={"id":i["id"],"compound_score":sid.polarity_scores(i['text_en'])['compound']}
+            except:
+                pass
+                #sentiments[n]={"id":i["id"],"compound_score":"NaN"}
+                #print(n, sentiments[n], i["id"])
+
 
         # add category
         for k, v in sentiments.items():

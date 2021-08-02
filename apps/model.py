@@ -1,3 +1,5 @@
+from matplotlib import pyplot as plt
+from matplotlib import colors 
 import streamlit.components.v1 as components
 import requests
 import matplotlib.pyplot as plt
@@ -8,6 +10,9 @@ import pydeck as pdk
 from wordcloud import WordCloud, STOPWORDS
 import pandas as pd
 import functions as fc
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import os
 
 def app():
     #Page style
@@ -15,17 +20,9 @@ def app():
         '<style>h1{color: #731F7D;font-family: Arial, Helvetica, sans-serif;} </style>',
         unsafe_allow_html=True)
 
-
-    c1, c6 = st.beta_columns([2, 2])  #search bar and hist
-    c4, c5 = st.beta_columns([2, 2])  #search bar and hist
-    c2, c3= st.beta_columns([2, 2])  #search bar and hist
-    #c7 = st.beta_columns([4])
-
-    #INPUT SEARCH BAR
-    
-    with c1:
-        query = st.text_input("Search for a topic", 'Technology')
-        st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
+    ## QUERY
+    query = st.text_input("Search for a topic", 'Technology')
+    st.markdown('<i class="material-icons"></i>', unsafe_allow_html=True)
 
     # ??
     today = datetime.datetime.now()
@@ -36,36 +33,33 @@ def app():
     #params
     params = dict(q=query)
     tweet_params = dict(q=query,
-                        filters=f"timestamp > {limit_time}",
+                        filters=f"timestamp < {limit_time}",
                         limit=20000)
     tweet_params_without_query = dict(q="",
-                                      filters=f"timestamp > {limit_time}")
-
-    headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
-
+                                      filters=f"timestamp < {limit_time}")
+    key = os.getenv('MEILI_MASTER_KEY')
+    #headers = {'X-Meili-API-Key': key}
+    headers = {'X-Meili-API-Key': "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"}
     #Data from News
-    lexai_url_news = "http://35.223.18.2/indexes/twitter_press/search"
+    lexai_url_news = "http://35.225.139.215/indexes/twitter_press/search"
     news = requests.get(lexai_url_news, params=tweet_params,
                         headers=headers).json()
 
     #Data from Politicians
-    lexai_url_politicians = "http://35.223.18.2/indexes/twitter_politicians/search"
+    lexai_url_politicians = "http://35.225.139.215/indexes/twitter_politicians/search"
     politicians = requests.get(lexai_url_politicians,
                                params=tweet_params,
                                headers=headers).json()
 
     #Data from General
-    lexai_url_general = f"http://35.223.18.2/indexes/twitter_query/search/"
-    full_data_general = requests.get(lexai_url_general,
-                                     params=tweet_params_without_query,
-                                     headers=headers).json()
+    lexai_url_general = f"http://35.225.139.215/indexes/twitter_query/search/"
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
 
     @st.cache(allow_output_mutation=True)
     def get_news():
-        lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_press/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         info = []
         for i in result["hits"]:
@@ -76,7 +70,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -86,9 +80,10 @@ def app():
             })
         return pd.DataFrame(info).sort_values(by="date",
                                               ascending=False).reset_index()
+
     @st.cache(allow_output_mutation=True)
     def get_politicians():
-        lexai_url = "http://35.223.18.2/indexes/twitter_politicians/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_politicians/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         info = []
         for i in result["hits"]:
@@ -99,7 +94,7 @@ def app():
                 text = i["text"]
             user = i["user"]
             date = i["date"]
-            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="150%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+            html_link = f'<blockquote data-cards="hidden" class="twitter-tweet" data-height="10%" data-width="100%"> <p lang="en" dir="ltr">{text}.<a href={link}</a></p>&mdash; {user} (@{user}) <a href={link}>{date}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
             info.append({
                 "link": link,
                 "text": text,
@@ -110,7 +105,78 @@ def app():
         return pd.DataFrame(info).sort_values(by="date",
                                               ascending=False).reset_index()
 
+    c1, c6 = st.beta_columns([2, 2])  #search bar and hist
+    c2, c3= st.beta_columns([2, 2])  #search bar and hist
+    
+    #unblock when sentiment analysis its fixed
+    #INPUT SEARCH BAR
 
+    with c1:
+        
+        st.title("Sentiment analysis under construction")
+        
+        # Sentiment pie-charts
+        #All data
+        query_df = pd.DataFrame(query_data_general['hits'])
+        politicians_df = pd.DataFrame(politicians['hits'])
+        news_df = pd.DataFrame(news['hits'])
+        all_tweets_df = pd.concat([query_df, politicians_df, news_df])
+
+        colors_pie = ['#11E7FB', '#6082FD', '#731F7D']
+
+        labels = ["Positive", "Neutral", "Negative"]
+
+        values_query = [
+            all_tweets_df['sentiment'].value_counts()['positive'],
+            all_tweets_df['sentiment'].value_counts()['neutral'],
+            all_tweets_df['sentiment'].value_counts()['negative']
+        ]
+        values_all = [41, 35, 24]
+
+        # Create subplots: use 'domain' type for Pie subplot
+        fig = make_subplots(rows=1,
+                            cols=2,
+                            specs=[[{
+                                'type': 'domain'
+                            }, {
+                                'type': 'domain'
+                            }]])
+        fig.add_trace(
+            go.Pie(title='Twitter',
+                   labels=labels,
+                   values=values_all,
+                   direction='clockwise',
+                   sort=False), 1, 1)
+        fig.add_trace(
+            go.Pie(title=query,
+                labels=labels,
+                   values=values_query,
+                   direction='clockwise',
+                   sort=False), 1, 2)
+
+        # Use `hole` to create a donut-like pie chart
+        fig.update_traces(hole=.4,
+                          hoverinfo="label+percent",
+                          textfont_size=15,
+                          marker=dict(colors=colors_pie))
+
+        fig.update_layout(
+            # Add annotations in the center of the donut pies.
+            annotations=[
+                dict(text='',
+                     x=0.18,
+                     y=0.5,
+                     font_size=18,
+                     font_color='#731F7D',
+                     showarrow=False),
+                dict(text="",
+                     x=0.82,
+                     y=0.5,
+                     font_size=18,
+                     font_color='#731F7D',
+                     showarrow=False)], autosize=False, width=500, height=250, margin=dict(l=0,r=0,b=0,t=0,pad=1))
+        st.plotly_chart(fig)
+        
     ### FEATURES ###
     #Industry news
     with c2:
@@ -142,57 +208,14 @@ def app():
                 list_of_tweets.append(
                     components.html(html_tweet[e], scrolling=True))
 
-# Sentiment pie-charts
-    fig, ax1 = plt.subplots(figsize=(10, 5))
-    plt.figure(figsize=(10, 5))
-
-    def label_function(val):
-        return f'{val:.0f}%'
-
-    with c4:
-        
-        st.title('Twitter sentiment')
-        '''
-        ## Twitter sentiment
-        '''
-
-        fig, ax1 = plt.subplots(figsize=(10, 5))
-        plt.figure(figsize=(10, 5))
-        data_df = pd.DataFrame(full_data_general['hits'])
-        data_df.groupby('sentiment').size().plot(
-            kind='pie',
-            colors=['tomato', 'lightgrey', '#b5eb9a'],
-            autopct=label_function,
-            ax=ax1)
-        #    ax1.set_ylabel('All tweets', size=22)
-        st.write(fig)
-
-    with c5:
-        st.title('On Topic sentiment')
-
-        '''
-        ## On Topic sentiment
-        '''
-
-        fig, ax2 = plt.subplots(figsize=(10, 5))
-        plt.figure(figsize=(10, 5))
-        topic_df = pd.DataFrame(query_data_general['hits'])
-
-        topic_df.groupby('sentiment').size().plot(
-            kind='pie',
-            colors=['tomato', 'lightgrey', '#b5eb9a'],
-            autopct=label_function,
-            ax=ax2)
-        #    ax2.set_ylabel('On topic', size=22)
-        st.write(fig)
-
-    # cloud of words
+# cloud of words
     with c6:
         st.title('Trending topics')
 
         '''
         ## Trending topics
         '''
+        cmap = colors.ListedColormap(["#731F7D","#6082FD", "#11E7FB"])
         general_df = pd.DataFrame(query_data_general["hits"])
         news_df = pd.DataFrame(news["hits"])
         politicians_df = pd.DataFrame(politicians["hits"])
@@ -215,17 +238,17 @@ def app():
 
         # Define a function to plot word cloud
         #def plot_cloud(wordcloud):
-            # Set figure size
+        # Set figure size
         #    plt.figure(figsize=(8, 16))
-            # Display image
-        #    plt.imshow(wordcloud) 
-            # No axis details
+        # Display image
+        #    plt.imshow(wordcloud)
+        # No axis details
         #    plt.axis("off");
-            
+
         # Import package
         STOPWORDS.add(query)
         # Generate word cloud
-        wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap='gray', mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
+        wordcloud = WordCloud(width = 800, height = 400, random_state=1, background_color='white', colormap=cmap, mode='RGB', collocations=False, stopwords = STOPWORDS, max_words=10).generate(text)
         # Plot
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
@@ -236,21 +259,28 @@ def app():
 
     #with c7:
     
+    #map disabled because of sentiment analysis problems
+    
     option = st.selectbox(
-        'Which tweets source do you want?',
-        ('twitter_query', 'twitter_politicians', 'twitter_press')
-        
-        )
+     'Which tweets source do you want?',
+     ("General Public", "Politicians", "Press")
+     
+     )
 
-    if option == 'twitter_query':
+    if option == 'General Public':
         option2 = st.selectbox(
         'Which region-type do you want?',
         ('City', 'Country')
         
         )
-
-    query = st.text_input('Input your searchword here:')
-    source = option     #sources: twitter_query, twitter_politicians, twitter_press
+    if option == "General Public":
+        source = "twitter_query"
+    if option == "Politicians":
+        source = "twitter_politicians"
+    if option == "Press":
+        source = "twitter_press"
+        
+    #sources: twitter_query, twitter_politicians, twitter_press
 
     ####### api retrieve #######
 
@@ -266,18 +296,14 @@ def app():
 
 
     else:
-        map_data = fc.refine_countries(data_dict)
+        map_data = fc.refine_pol_press(data_dict)
 
 
 
     ######streamlit part#####
 
 
-    st.title(f'source: {source}')
-
-
-    st.write('You selected:', option)
-
+    st.title(f'Source: {option}')
 
     map_tweets_loc = map_data
 
@@ -312,6 +338,7 @@ def app():
         }
     }
 
+
     if source == 'twitter_query':
         if option2 == 'City':
             tooltip = tooltip_city
@@ -340,3 +367,4 @@ def app():
         ),
         ],
     ))
+    st.image('legend.jpg', width=150)

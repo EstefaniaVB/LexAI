@@ -8,8 +8,8 @@ def get_tweets(query,source):
   '''sources: twitter_query, twitter_politicians, twitter_press'''
 
   params=dict(q=query,limit=100000)
-  headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
-  lexai_url = f"http://35.223.18.2/indexes/{source}/search/"
+  headers={'X-Meili-API-Key':'YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi'}
+  lexai_url = f"http://35.225.139.215/indexes/{source}/search/"
   data = requests.get(lexai_url,params=params,headers=headers).json()
   data_df=pd.DataFrame(data['hits'])
   data_df = data_df[data_df["timestamp"] >= 1.622115e+09]   ###filters tweets which are newer than certain timepoint ~27th may
@@ -134,7 +134,7 @@ def count_countries(tweets):
     
     return df_country_counts
  
-    
+   
 def add_radius(df):
     df["radius"] = df["retweets"].apply(lambda retweets: math.sqrt(retweets)*2000 + 20000)
     return df
@@ -220,3 +220,25 @@ def refine_countries(data_dict):
     df_countries = add_radius(df_countries)
     df_countries = sent_colors(df_countries)
     return df_countries
+
+def refine_pol_press(data_dict):
+
+    #this function concludes the steps of summing the tweet counts, likes etc. 
+    #by city in a dataframe and assign them to a latitude and longitude
+    #to display the data on a geographical map
+    
+    df = pd.DataFrame(data_dict)
+
+    df = df[['retweet_count', 'favorite_count', 'compound_score', 'country']]
+    df = df.rename(columns={"retweet_count": "retweets", "favorite_count": "likes", "compound_score": "sentiment"})
+    df['tweets'] = 1
+    df = clean_and_sum(df, 'country')
+
+    df_countries_loc = pd.read_csv('country_loc.csv')
+
+    
+    df = df.merge(df_countries_loc, how='left', on='country')
+    df = df.dropna()
+    df = add_radius(df)
+    df = sent_colors(df)
+    return df
