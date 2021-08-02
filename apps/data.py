@@ -179,7 +179,7 @@ def app():
                     st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Title: </span></strong>{i["title"]}</p>',unsafe_allow_html=True)
                     st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253;">Author: </span></strong>{i["author"]}</p>',unsafe_allow_html=True)
                     st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Date: </span></strong>{i["date"]}</p>',unsafe_allow_html=True)
-                    if st.button('Link', key=i):
+                    if st.button('Link'):
                         js = f"window.open('{i['link']}')"
                         html = '<img src onerror="{}">'.format(js)
                         div = Div(text=html)
@@ -211,7 +211,7 @@ def app():
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
+                        if st.button('Link'):
                             js = f"window.open('{i['link']}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
@@ -224,7 +224,7 @@ def app():
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
+                        if st.button('Link'):
                             js = f"window.open('{i['link']}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
@@ -237,7 +237,7 @@ def app():
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
+                        if st.button('Link'):
                             js = f"window.open('{i['link']}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
@@ -250,7 +250,7 @@ def app():
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
+                        if st.button('Link'):
                             js = f"window.open('{i['link']}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
@@ -263,7 +263,7 @@ def app():
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Topic: </span></strong>{i["topics"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">Type of act: </span></strong>{i["type_of_act"]}</p>',unsafe_allow_html=True)
                         st.markdown(f'<p><strong><span style="color: rgb(96, 130, 253);">End date: </span></strong>{i["end_date"]}</p>',unsafe_allow_html=True)
-                        if st.button('Link', key=i):
+                        if st.button('Link'):
                             js = f"window.open('{i['link']}')"
                             html = '<img src onerror="{}">'.format(js)
                             div = Div(text=html)
