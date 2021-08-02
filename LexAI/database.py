@@ -27,8 +27,9 @@ class Database(TwitterSearch, Analyse):
                  indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians']):
 
         if key is None:
-            key = os.getenv('MEILISEARCH_PUBLIC_KEY')
-        
+            #key = os.getenv('MEILI_MASTER_KEY')
+            key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
+            
         super().__init__('PROJECT_T', trans)
         super().__init__(url, key)
         project_id = os.getenv('PROJECT_E')  # change to your project ID env key
@@ -178,8 +179,8 @@ class Database(TwitterSearch, Analyse):
     #update the atributtes in consultation index to solve Status bug    
     def update_consul_displayed_att(self, url='http://35.225.139.215', key=None):
         if key is None:
-            key = os.getenv('MEILISEARCH_PUBLIC_KEY')
-            
+            #key = os.getenv('MEILI_MASTER_KEY')
+            key= "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         self.client = meilisearch.Client(url, key)
         self.client.index('consultations').update_displayed_attributes([
             "title",

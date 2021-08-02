@@ -51,9 +51,9 @@ def app():
                         limit=100000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
-    key = os.getenv('MEILISEARCH_PUBLIC_KEY')
-    headers = {'X-Meili-API-Key': key}
-
+    key = os.getenv('MEILI_MASTER_KEY')
+    #headers = {'X-Meili-API-Key': key}
+    headers = {'X-Meili-API-Key': "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"}
     #Data from News
     lexai_url_news = "http://35.225.139.215/indexes/twitter_press/search"
     news = requests.get(lexai_url_news, params=tweet_params,

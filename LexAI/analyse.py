@@ -21,11 +21,12 @@ class Analyse:
     def __init__(self, url='http://35.225.139.215', key=None):
         
         if key is None:
-            key = os.getenv('MEILISEARCH_PUBLIC_KEY')
-        
+            #key = os.getenv('MEILI_MASTER_KEY')
+            key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         self.client = meilisearch.Client(url, key)
         url="http://localhost:7700/indexes"
-        key = os.getenv('MEILISEARCH_PUBLIC_KEY')
+        #key = os.getenv('MEILI_MASTER_KEY')
+        key="YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
         headers = {'X-Meili-API-Key': key}
         self.result = requests.get(url, headers=headers).json()
         self.indices = [idx.get('name', None) for idx in self.result]
