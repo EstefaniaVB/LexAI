@@ -11,6 +11,6 @@ app = MultiApp()
 
 # Add all your application here
 app.add_app("Regulation", data.app)
-app.add_app("Social Media", model_construction.app)
+app.add_app("Social Media", model.app)
 # The main app
 app.run()
