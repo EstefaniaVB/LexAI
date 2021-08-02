@@ -23,11 +23,11 @@ load_dotenv(dotenv_path=join(dirname(dirname(__file__)),'.env'))
 
 class Database(TwitterSearch, Analyse):
     
-    def __init__(self, url='http://127.0.0.1:7700', key=None, trans=True,
+    def __init__(self, url='http://35.225.139.215', key=None, trans=True,
                  indices=['eurlex', 'consultations', 'twitter_query', 'twitter_press', 'twitter_politicians']):
 
         if key is None:
-            key = os.getenv('MEILISEARCH_KEY')
+            key = os.getenv('MEILI_MASTER_KEY')
         
         super().__init__('PROJECT_T', trans)
         super().__init__(url, key)
@@ -176,9 +176,9 @@ class Database(TwitterSearch, Analyse):
         return final_results
 
     #update the atributtes in consultation index to solve Status bug    
-    def update_consul_displayed_att(self, url='http://127.0.0.1:7700', key=None):
+    def update_consul_displayed_att(self, url='http://135.225.139.215', key=None):
         if key is None:
-            key = os.getenv('MEILISEARCH_KEY')
+            key = os.getenv('MEILI_MASTER_KEY')
             
         self.client = meilisearch.Client(url, key)
         self.client.index('consultations').update_displayed_attributes([
