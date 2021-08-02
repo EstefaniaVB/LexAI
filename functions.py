@@ -8,8 +8,8 @@ def get_tweets(query,source):
   '''sources: twitter_query, twitter_politicians, twitter_press'''
 
   params=dict(q=query,limit=100000)
-  headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
-  lexai_url = f"http://127.0.0.1:7700/indexes/{source}/search/"
+  headers={'X-Meili-API-Key':'YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi'}
+  lexai_url = f"http://35.225.139.215/indexes/{source}/search/"
   data = requests.get(lexai_url,params=params,headers=headers).json()
   data_df=pd.DataFrame(data['hits'])
   data_df = data_df[data_df["timestamp"] >= 1.622115e+09]   ###filters tweets which are newer than certain timepoint ~27th may

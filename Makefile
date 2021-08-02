@@ -125,3 +125,17 @@ deploy_heroku:
 # ----------------------------------
 say_hello:
 	-@echo "Hello World"
+#___________________________________
+# GCP DEPLOYMENT
+#__________________________________
+.PHONY: run run-container gcloud-deploy
+
+run:
+	@streamlit run app.py --server.port=8080 --server.address=0.0.0.0
+
+run-container:
+	@docker build . -t ${APP_NAME}
+	@docker run -p 8080:8080 ${APP_NAME}
+
+gcloud-deploy:
+	@gcloud app deploy app.yaml
