@@ -51,7 +51,7 @@ def app():
                         limit=100000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
-    key = os.getenv('MEILISEARCH_KEY')
+    key = os.getenv('MEILISEARCH_PUBLIC_KEY')
     headers = {'X-Meili-API-Key': key}
 
     #Data from News
