@@ -12,7 +12,7 @@ import pandas as pd
 import functions as fc
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import os
 
 def app():
     #Page style
@@ -33,33 +33,33 @@ def app():
     #params
     params = dict(q=query)
     tweet_params = dict(q=query,
-                        filters=f"timestamp > {limit_time}",
+                        filters=f"timestamp < {limit_time}",
                         limit=20000)
     tweet_params_without_query = dict(q="",
-                                      filters=f"timestamp > {limit_time}")
-
-    headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
-
+                                      filters=f"timestamp < {limit_time}")
+    key = os.getenv('MEILI_MASTER_KEY')
+    #headers = {'X-Meili-API-Key': key}
+    headers = {'X-Meili-API-Key': "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"}
     #Data from News
-    lexai_url_news = "http://127.0.0.1:7700/indexes/twitter_press/search"
+    lexai_url_news = "http://35.225.139.215/indexes/twitter_press/search"
     news = requests.get(lexai_url_news, params=tweet_params,
                         headers=headers).json()
 
     #Data from Politicians
-    lexai_url_politicians = "http://127.0.0.1:7700/indexes/twitter_politicians/search"
+    lexai_url_politicians = "http://35.225.139.215/indexes/twitter_politicians/search"
     politicians = requests.get(lexai_url_politicians,
                                params=tweet_params,
                                headers=headers).json()
 
     #Data from General
-    lexai_url_general = f"http://127.0.0.1:7700/indexes/twitter_query/search/"
+    lexai_url_general = f"http://35.225.139.215/indexes/twitter_query/search/"
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
 
     @st.cache(allow_output_mutation=True)
     def get_news():
-        lexai_url = "http://127.0.0.1:7700/indexes/twitter_press/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_press/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         info = []
         for i in result["hits"]:
@@ -83,7 +83,7 @@ def app():
 
     @st.cache(allow_output_mutation=True)
     def get_politicians():
-        lexai_url = "http://127.0.0.1:7700/indexes/twitter_politicians/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_politicians/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         info = []
         for i in result["hits"]:
@@ -107,11 +107,14 @@ def app():
 
     c1, c6 = st.beta_columns([2, 2])  #search bar and hist
     c2, c3= st.beta_columns([2, 2])  #search bar and hist
-
+    
+    #unblock when sentiment analysis its fixed
     #INPUT SEARCH BAR
-    with c1:
-        st.title("Sentiment analysis")
 
+    with c1:
+        
+        st.title("Sentiment analysis under construction")
+        
         # Sentiment pie-charts
         #All data
         query_df = pd.DataFrame(query_data_general['hits'])
@@ -173,7 +176,7 @@ def app():
                      font_color='#731F7D',
                      showarrow=False)], autosize=False, width=500, height=250, margin=dict(l=0,r=0,b=0,t=0,pad=1))
         st.plotly_chart(fig)
-
+        
     ### FEATURES ###
     #Industry news
     with c2:
@@ -255,7 +258,9 @@ def app():
 
 
     #with c7:
-
+    
+    #map disabled because of sentiment analysis problems
+    
     option = st.selectbox(
      'Which tweets source do you want?',
      ("General Public", "Politicians", "Press")

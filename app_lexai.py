@@ -20,6 +20,7 @@ import math
 import altair as alt
 import numpy as np
 import pandas as pd
+import os
 
 def app():
     #Dashboard Layout
@@ -58,26 +59,28 @@ def app():
     tweet_params=dict(q=query, filters= f"timestamp > {limit_time}", limit=20000)
     tweet_params_without_query = dict(q="", filters= f"timestamp > {limit_time}")
 
-    headers={'X-Meili-API-Key':'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
+    #key = os.getenv('MEILISEARCH_KEY')
+    key = "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"
+    headers={'X-Meili-API-Key':key}
 
 
     #Data from News
-    lexai_url_news = "http://35.223.18.2/indexes/twitter_press/search"
+    lexai_url_news = "http://35.225.139.215/indexes/twitter_press/search"
     news = requests.get(lexai_url_news,params=tweet_params,headers=headers).json()
 
     #Data from Politicians
-    lexai_url_politicians = "http://35.223.18.2/indexes/twitter_politicians/search"
+    lexai_url_politicians = "http://35.225.139.215/indexes/twitter_politicians/search"
     politicians = requests.get(lexai_url_politicians,params=tweet_params,headers=headers).json()
 
     #Data from General
-    lexai_url_general = f"http://35.223.18.2/indexes/twitter_query/search/"
+    lexai_url_general = f"http://35.225.139.215/indexes/twitter_query/search/"
     full_data_general = requests.get(lexai_url_general,params=tweet_params_without_query,headers=headers).json()
     query_data_general = requests.get(lexai_url_general,params=tweet_params,headers=headers).json()
 
 
 
     def get_regulation():
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        lexai_url = "http://35.225.139.215/indexes/eurlex/search"
         result = requests.get(lexai_url,params=params,headers=headers).json()
         reg = []
         for i in result["hits"]:
@@ -91,7 +94,7 @@ def app():
 
 
     def get_consultations():
-        lexai_url = "http://35.223.18.2/indexes/consultations/search"
+        lexai_url = "http://35.225.139.215/indexes/consultations/search"
         result = requests.get(lexai_url,params=params,headers=headers).json()
         consultations = []
         for i in result["hits"]:
@@ -109,7 +112,7 @@ def app():
         return consultations
 
     def get_news():
-        lexai_url = "http://35.223.18.2/indexes/twitter_press/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_press/search"
         result = requests.get(lexai_url,params=params,headers=headers).json()
         info=[]
         for i in result["hits"]:
@@ -125,7 +128,7 @@ def app():
         return pd.DataFrame(info).sort_values(by="date", ascending=False).reset_index()
 
     def get_politicians():
-        lexai_url = "http://35.223.18.2/indexes/twitter_politicians/search"
+        lexai_url = "http://35.225.139.215/indexes/twitter_politicians/search"
         result = requests.get(lexai_url,params=params,headers=headers).json()
         info=[]
         for i in result["hits"]:
@@ -491,7 +494,7 @@ def app():
     # Graph volume regulations
     with c10:
         params = dict(q=query, limit=100000)
-        lexai_url = "http://35.223.18.2/indexes/eurlex/search"
+        lexai_url = "http://35.225.139.215/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         data_eurlex_df = pd.DataFrame(result["hits"])
 

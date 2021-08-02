@@ -131,7 +131,7 @@ class TwitterSearch:
 
         return output_trans
 
-    def search_query(self, query, count=5, result_type='recent', lang=None):
+    def search_query(self, query, count=5, result_type='mixed', lang=None):
         # count: max 10 because its looking for all 19 languages at once
         '''this function uses the twitter search endpoint with max 190 requests/15 min
         the output is a list of dictionaries with one dict per tweet.

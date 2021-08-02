@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 from bokeh.models.widgets import Div
+import os
 
 
 def app():
@@ -47,31 +48,31 @@ def app():
     params = dict(q=query)
     tweet_params = dict(q=query,
                         filters=f"timestamp > {limit_time}",
-                        limit=10000)
+                        limit=100000)
     tweet_params_without_query = dict(q="",
                                       filters=f"timestamp > {limit_time}")
-
-    headers = {'X-Meili-API-Key': 'OTkwNzQ0ZGRkZTc0NDcwM2RlMzFlOGIx'}
-
+    key = os.getenv('MEILI_MASTER_KEY')
+    #headers = {'X-Meili-API-Key': key}
+    headers = {'X-Meili-API-Key': "YjI1YzZhMmE4YTA0NmRjNTA5YTUxOTFi"}
     #Data from News
-    lexai_url_news = "http://127.0.0.1:7700/indexes/twitter_press/search"
+    lexai_url_news = "http://35.225.139.215/indexes/twitter_press/search"
     news = requests.get(lexai_url_news, params=tweet_params,
                         headers=headers).json()
 
     #Data from Politicians
-    lexai_url_politicians = "http://127.0.0.1:7700/indexes/twitter_politicians/search"
+    lexai_url_politicians = "http://35.225.139.215/indexes/twitter_politicians/search"
     politicians = requests.get(lexai_url_politicians,
                                params=tweet_params,
                                headers=headers).json()
 
     #Data from General
-    lexai_url_general = f"http://127.0.0.1:7700/indexes/twitter_query/search/"
+    lexai_url_general = f"http://35.225.139.215/indexes/twitter_query/search/"
     query_data_general = requests.get(lexai_url_general,
                                       params=tweet_params,
                                       headers=headers).json()
 
     def get_regulation():
-        lexai_url = "http://127.0.0.1:7700/indexes/eurlex/search"
+        lexai_url = "http://35.225.139.215/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         reg = []
         for i in result["hits"]:
@@ -89,18 +90,21 @@ def app():
         return reg
 
     def get_consultations():
-        lexai_url = "http://127.0.0.1:7700/indexes/consultations/search"
+        lexai_url = "http://35.225.139.215/indexes/consultations/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         consultations = []
         for i in result["hits"]:
             title = i['title']
             topics = i['topics']
             type_of_act = i['type_of_act']
-            status = i["status"]
             try:
-                end_date = pd.to_datetime(i['end_date']).date()
+                status = i["status"]
             except:
-                end_date = pd.to_datetime(i['end_date'])
+                status= ""
+            try:
+                end_date = pd.to_datetime(i['end_date'], errors='coerce').date()
+            except:
+                end_date = pd.to_datetime(i['end_date'], errors='coerce')
             link = i['link']
             consultations.append({
                 "title": title,
@@ -118,7 +122,7 @@ def app():
     # Graph volume regulations
     with c2:
         params = dict(q=query, limit=100000)
-        lexai_url = "http://127.0.0.1:7700/indexes/eurlex/search"
+        lexai_url = "http://35.225.139.215/indexes/eurlex/search"
         result = requests.get(lexai_url, params=params, headers=headers).json()
         data_eurlex_df = pd.DataFrame(result["hits"])
         data_eurlex_df['year/month'] = data_eurlex_df['date'].str[0:7]
@@ -172,6 +176,7 @@ def app():
         start_date = pd.to_datetime(start_date).date()
         end_date = pd.to_datetime(end_date).date()
         regulation = get_regulation()
+        regulation.sort(key=lambda item:item['date'], reverse=True)
         expander = st.beta_expander("expand")
         with expander:
             for i in regulation:
