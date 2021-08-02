@@ -112,7 +112,7 @@ def app():
     #INPUT SEARCH BAR
 
     with c1:
-        '''
+        
         st.title("Sentiment analysis under construction")
         
         # Sentiment pie-charts
@@ -175,7 +175,7 @@ def app():
                      font_size=18,
                      font_color='#731F7D',
                      showarrow=False)], autosize=False, width=500, height=250, margin=dict(l=0,r=0,b=0,t=0,pad=1))
-        st.plotly_chart(fig)'''
+        st.plotly_chart(fig)
         
     ### FEATURES ###
     #Industry news
@@ -260,7 +260,7 @@ def app():
     #with c7:
     
     #map disabled because of sentiment analysis problems
-    '''
+    
     option = st.selectbox(
      'Which tweets source do you want?',
      ("General Public", "Politicians", "Press")
@@ -368,4 +368,3 @@ def app():
         ],
     ))
     st.image('legend.jpg', width=150)
-'''
